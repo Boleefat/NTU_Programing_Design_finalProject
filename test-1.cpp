@@ -3,7 +3,6 @@
 #include <string>
 #include <random>
 using namespace std;
-////dddkkk0000
 
 // Card//////////////////////////////////////////
 struct Card
@@ -122,10 +121,9 @@ public:
         Card *drawnCard = deck.drawOneCard(); // 從卡組中抽一張牌的指標
         if (drawnCard != nullptr)
         {
-            hand.push_back(*drawnCard); // 添加該牌到玩家手牌中
+            hand.push_back(*drawnCard); // 添加該牌到玩家手牌中 ////注意這邊是shallow copy
             cout << name << " get one card: " << drawnCard->suit << "-" << drawnCard->rank << ", value: " << drawnCard->value << endl;
-            delete drawnCard; // 在這裡刪除牌，請確保在手牌中有複製牌的副本，以免懸空指標
-        }
+                }
         else
         {
             cout << "CardDeck is empty." << endl;
