@@ -3,7 +3,7 @@
 #include <string>
 #include <random>
 using namespace std;
-////dddkkk
+////dddkkk0000
 
 // Card//////////////////////////////////////////
 struct Card
