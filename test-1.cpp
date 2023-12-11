@@ -3,6 +3,7 @@
 #include <string>
 #include <random>
 #include <algorithm>
+#include <ctime>
 using namespace std;
 
 // Card//////////////////////////////////////////
@@ -34,8 +35,8 @@ public:
     CardDeck()
     {
         initializeCards();
-        // 初始化隨機數生成器
-        randomGenerator = std::mt19937(std::random_device()());
+        // Use the current time as a seed for the random number generator
+        randomGenerator = std::mt19937(static_cast<unsigned>(std::time(0)));
     }
 
     // 取得卡片數量
@@ -65,17 +66,20 @@ public:
     {
         if (!isEmpty())
         {
-            // 使用隨機數生成器取得一個隨機索引
             std::uniform_int_distribution<int> dis(0, cards.size() - 1);
-            int randomIndex = dis(randomGenerator);
 
-            // 取得隨機抽中的牌的指標
-            Card *drawnCard = &cards[randomIndex];
+            // 使用迴圈確保不斷嘗試抽牌，直到抽到一張在卡組中的牌
+            while (true)
+            {
+                int randomIndex = dis(randomGenerator);
+                Card *drawnCard = &cards[randomIndex];
 
-            // 將 isInDeck 設為 false
-            drawnCard->isInDeck = false;
-
-            return drawnCard;
+                if (drawnCard->isInDeck)
+                {
+                    drawnCard->isInDeck = false;
+                    return drawnCard;
+                }
+            }
         }
         else
         {
