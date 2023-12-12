@@ -151,37 +151,6 @@ private:
 };
 
 
-// 道具牌
-class SpecialCard : public Card {
-public:
-    string specialEffect; 
-
-    SpecialCard(const string &s, const string &r, int v, const string &effect) 
-    : Card(s, r, v), specialEffect(effect) {}
-
-    void activateEffect(Deck &deck, Player &currentPlayer) {
-        cout << "Activating special effect: " << specialEffect << endl;
-
-        if (specialEffect == "SwapCard") {
-            currentPlayer.swapCard(deck);
-        } else if (specialEffect == "DiscardCard") {
-            currentPlayer.discardCard();
-        } else if (specialEffect == "IncreaseProbability") {
-            cout << "請輸入您想提高獲得的數字 (1~10): ";
-            int num;
-            cin >> num;
-            currentPlayer.SpecialMod[0] = 1;
-            currentPlayer.SpecialMod[1] = num;
-        } else if (specialEffect == "RedrawCard") {
-            // 重抽一張牌
-            currentPlayer.redrawCard(deck);
-        }
-    }
-};
-
-        
-
-
 // Player////////////////////////////////////////
 class Player
 {
@@ -231,11 +200,59 @@ public:
         return hand;
     }
 
+    void Player::swapCard(CardDeck &deck) {
+    if (!hand.empty() && !deck.isEmpty()) {
+        Card topCard = deck.drawTopCard();
+        Card &cardToSwap = hand.back();  // 假設我們交換手牌中的最後一張牌
+        std::swap(cardToSwap, topCard);
+        deck.returnCardToDeck(topCard); // 將交換的牌返回到牌堆
+    }
+}
+
+    void Player::discardCard() {
+    if (!hand.empty()) {
+        hand.pop_back(); // 丟棄手牌中的最後一張牌
+    }
+}
+
+    void Player::redrawCard(CardDeck &deck) {
+    discardCard(); // 首先丟棄一張牌
+    if (!deck.isEmpty()) {
+        Card newCard = deck.drawCard();
+        hand.push_back(newCard); // 將新牌加入手牌
+    }
+}
+
+
 protected:
     string name;
     vector<Card> hand;
     SkillCounter skillCounter;
 };
+
+
+// 道具牌
+class SpecialCard : public Card {
+public:
+    string specialEffect; 
+
+    SpecialCard(const string &s, const string &r, int v, const string &effect) 
+    : Card(s, r, v), specialEffect(effect) {}
+
+    void activateEffect(Deck &deck, Player &currentPlayer) {
+        cout << "Activating special effect: " << specialEffect << endl;
+
+        if (specialEffect == "SwapCard") {
+            currentPlayer.swapCard(deck);
+        } else if (specialEffect == "DiscardCard") {
+            currentPlayer.discardCard();
+        } else if (specialEffect == "RedrawCard") {
+            // 重抽一張牌
+            currentPlayer.redrawCard(deck);
+        }
+    }
+};
+
 
 // Seeker class, derived from Player///////////////
 class Seeker : public Player
@@ -665,8 +682,6 @@ int main()
     game.showPlayersNameAndChr(); // 確認玩家資訊
     game.initialDeal();           // 進行初始發牌
     // game.showPlayersHands();      // 顯示每位玩家的手牌
-    game.playerMove(game.getPlayerAtIndex(0));
-
     
     // 通過猜大小遊戲來獲得道具牌
     for (int i = 0; i < game.numberOfPlayers(); ++i) {
@@ -678,6 +693,6 @@ int main()
         }
     }
 
-
+    game.playerMove(game.getPlayerAtIndex(0));
     return 0;
 }
