@@ -417,17 +417,6 @@ public:
     }
 };
 
-// 輸入'Y'繼續遊戲
-void enterYtoContinue()
-{
-    char enter = 'N';
-    while(enter != 'Y')
-    {
-        cout << "If you've done reading, enter Y to continue:";
-        cin >> enter;
-    }
-    cout << "--------------------" << endl;
-}
 
 // Game////////////////////////////////////////////////
 class Game
@@ -437,6 +426,18 @@ private:
     CardDeck gameDeck;        // 遊戲的卡片牌組
 
 public:
+    // 輸入'Y'繼續遊戲
+    void enterYtoContinue()
+    {
+        char enter = 'N';
+        while(enter != 'Y')
+        {
+            cout << "If you've done reading, enter Y to continue:";
+            cin >> enter;
+        }
+        cout << "--------------------" << endl;
+    }
+    
     // 將 Player 加入 players 向量
     void addPlayer(Player *player)
     {
