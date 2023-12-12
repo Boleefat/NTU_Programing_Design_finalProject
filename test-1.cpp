@@ -17,6 +17,7 @@ struct Card
     // 建構函式
     Card(const string &s, const string &r, int v) : suit(s), rank(r), value(v), isInDeck(true) {}
 };
+
 // SkillCounter/////////////////////////////////////
 struct SkillCounter
 {
@@ -27,6 +28,7 @@ struct SkillCounter
     // 建構函式
     SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(true), isSkillThreeAvailable(true) {}
 };
+
 // CardDeck//////////////////////////////////////
 class CardDeck
 {
@@ -68,7 +70,7 @@ public:
         {
             std::uniform_int_distribution<int> dis(0, cards.size() - 1);
 
-            // 使用迴圈確保不斷嘗試抽牌，直到抽到一張在卡組中的牌
+            // 使用迴圈確保一直抽牌，直到抽到一張在卡組中的牌
             while (true)
             {
                 int randomIndex = dis(randomGenerator);
@@ -88,6 +90,7 @@ public:
             return nullptr;
         }
     }
+
     // 根據 suit 和 rank 尋找特定的 Card 並返回指標，如果 isInDeck 為 false 則輸出訊息
     Card *specificCard(const string &suit, const string &rank)
     {
@@ -151,6 +154,7 @@ private:
 class Player
 {
 public:
+    virtual ~Player() = default; // 虛擬析構函數
     Player(const string &playerName) : name(playerName), skillCounter{} {}
 
     void showHand() const
@@ -176,7 +180,16 @@ public:
         }
     }
 
-    string getName()
+    // 在 Player 類別中新增函式
+    void addSpecificCard(Card *card)
+    {
+        if (card != nullptr)
+        {
+            hand.push_back(*card);
+        }
+    }
+
+    string getName() const
     {
         return this->name;
     }
@@ -192,20 +205,14 @@ protected:
     SkillCounter skillCounter;
 };
 
-// Seeker class, derived from Player
+// Seeker class, derived from Player///////////////
 class Seeker : public Player
 {
 
 public:
+    virtual ~Seeker() = default; // 虛擬析構函數
     // Constructor for Seeker
     Seeker(const string &playerName) : Player(playerName) {}
-
-    // Additional functionalities specific to Seeker can be added here
-    void additionalSeekerFunction()
-    {
-        // Add any specific functionality for the Seeker class here
-        cout << "Seeker-specific function called." << endl;
-    }
 
     // skillOne: Seeker uses a special ability to seek another player's hand
     void seekAnotherPlayer(Player *targetPlayer)
@@ -245,9 +252,11 @@ public:
     }
 };
 
+// Targetor class, derived from Player///////////////
 class Targetor : public Player
 {
 public:
+    virtual ~Targetor() = default; // 虛擬析構函數
     // Constructor for Targetor
     Targetor(const string &playerName) : Player(playerName) {}
 
@@ -320,56 +329,311 @@ public:
     }
 };
 
+// Game////////////////////////////////////////////////
+class Game
+{
+private:
+    vector<Player *> players; // 儲存payer的ptr
+    CardDeck gameDeck;        // 遊戲的卡片牌組
+
+public:
+    // 將 Player 加入 players 向量
+    void addPlayer(Player *player)
+    {
+        players.push_back(player);
+    }
+
+    // 建立platers的vector
+    void addPlayers()
+    {
+        // 詢問玩家數量
+        int numPlayers;
+        while (true)
+        {
+            try
+            {
+                cout << "Enter the number of players (up to 5): ";
+                cin >> numPlayers;
+
+                if (cin.fail() || numPlayers < 1 || numPlayers > 5)
+                {
+                    throw out_of_range("Invalid input. Please enter a number between 1 and 5.");
+                }
+
+                break;
+            }
+            catch (const out_of_range &e)
+            {
+                cout << e.what() << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        }
+
+        // 這邊要加入職業介紹，還沒完成
+
+        // 動態建立玩家，加入遊戲
+        for (int i = 0; i < numPlayers; ++i)
+        {
+            string playerName;
+            string playerCharacter;
+
+            cout << "Enter name for Player " << i + 1 << ": ";
+            cin >> playerName;
+
+            while (true)
+            {
+                cout << "Choose character for Player " << i + 1 << " (Press S to choose Seek, Press T to choose Targetor): ";
+                cin >> playerCharacter;
+
+                try
+                {
+                    Player *newPlayer = nullptr;
+
+                    if (playerCharacter == "S")
+                    {
+                        newPlayer = new Seeker(playerName);
+                    }
+                    else if (playerCharacter == "T")
+                    {
+                        newPlayer = new Targetor(playerName);
+                    }
+                    else
+                    {
+                        throw invalid_argument("Invalid player class");
+                    }
+
+                    // 將玩家加入遊戲
+                    players.push_back(newPlayer);
+
+                    break; // 跳出無窮迴圈，因為輸入正確
+                }
+                catch (const invalid_argument &e)
+                {
+                    cout << e.what() << " Please try again." << endl;
+                }
+            }
+        }
+    }
+
+    // 進行初始發牌，每位玩家隨機抽兩張卡
+    void initialDeal()
+    {
+        for (Player *player : players)
+        { // 每位玩家抽兩張卡
+            Card *drawnCard1 = gameDeck.drawOneCard();
+            Card *drawnCard2 = gameDeck.drawOneCard();
+            // 將抽到的卡片加入玩家手牌
+            player->addSpecificCard(drawnCard1);
+            player->addSpecificCard(drawnCard2);
+        }
+    }
+
+    // 顯示每位玩家的名稱和角色類型
+    void showPlayersNameAndChr() const
+    {
+        cout << "Players Information:" << endl;
+        for (const Player *player : players)
+        {
+            cout << "Name: " << player->getName() << ", Character: ";
+
+            // 使用 dynamic_cast 來檢查實際型別
+            const Seeker *seeker = dynamic_cast<const Seeker *>(player);
+            const Targetor *targetor = dynamic_cast<const Targetor *>(player);
+
+            if (seeker != nullptr)
+            {
+                cout << "Seeker";
+            }
+            else if (targetor != nullptr)
+            {
+                cout << "Targetor";
+            }
+            else
+            {
+                cout << "Unknown Character";
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+
+    // 顯示每位玩家的手牌
+    void showPlayersHands() const
+    {
+        for (const Player *player : players)
+        {
+            cout << "Name: " << player->getName() << "'s hand:" << endl;
+            player->showHand();
+            cout << endl;
+        }
+    }
+
+    // 判斷player的type，呼叫該type的move
+    void playerMove(Player *player)
+    {
+        if (player == nullptr)
+        {
+            cout << "Invalid player." << endl;
+            return;
+        }
+
+        // Check the player's type using dynamic_cast
+        Seeker *seeker = dynamic_cast<Seeker *>(player);
+        Targetor *targetor = dynamic_cast<Targetor *>(player);
+
+        if (seeker != nullptr)
+        {
+            seekerMove(seeker);
+        }
+        else if (targetor != nullptr)
+        {
+            targetorMove(targetor);
+        }
+        else
+        {
+            cout << "Unknown Character" << endl;
+        }
+    }
+
+    // Seeker的move
+    void seekerMove(Seeker *seeker)
+    {
+        cout << "Player's turn: " << seeker->getName() << ", Character: Seeker" << endl;
+        cout << "Current hand: " << endl;
+        seeker->showHand();
+
+        char move;
+        while (true)
+        {
+            cout << "Enter your move (A: Add a card, S: Use skill, N: Do nothing): ";
+            cin >> move;
+
+            if (move == 'A' || move == 'S' || move == 'N')
+            {
+                break; // 輸入正確，跳出迴圈
+            }
+            else
+            {
+                cout << "Invalid move. Please enter A, S, or N." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+        }
+
+        switch (move)
+        {
+        case 'A':
+            seeker->randomlyAddOneCard(gameDeck);
+            cout << "Adding a card..." << endl;
+            break;
+        case 'S':
+            int skillChoice;
+            while (true)
+            {
+                cout << "Choose a skill (1: Skill One, 2: Skill Two): ";
+                cin >> skillChoice;
+
+                if (skillChoice == 1 || skillChoice == 2)
+                {
+                    break; // 輸入正確，跳出迴圈
+                }
+                else
+                {
+                    cout << "Invalid skill choice. Please enter 1 or 2." << endl;
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
+            }
+            // 使用技能
+            switch (skillChoice)
+            {
+            case 1:
+            {
+                // 展示玩家資訊
+                showPlayersNameAndChr();
+
+                // 讓使用者輸入要尋找的玩家名稱
+                cout << "Enter the name of the player to seek: ";
+                string playerNameToSeek;
+                cin >> playerNameToSeek;
+
+                // 在 players 中尋找玩家指標
+                Player *targetPlayer = nullptr;
+                for (Player *p : players)
+                {
+                    if (p->getName() == playerNameToSeek)
+                    {
+                        targetPlayer = p;
+                        break;
+                    }
+                }
+
+                // 如果找到玩家，執行技能
+                if (targetPlayer != nullptr)
+                {
+                    seeker->seekAnotherPlayer(targetPlayer);
+                }
+                else
+                {
+                    cout << "Player not found." << endl;
+                }
+                break; // 這裡加上 break
+            }
+            case 2:
+                seeker->seekDeck(gameDeck);
+                break;
+            }
+            break;
+        case 'N':
+            // 不做任何事
+            cout << "Doing nothing..." << endl;
+            break;
+        }
+
+        seeker->showHand();
+    }
+
+    // Targetor的move
+    void targetorMove(Targetor *Targetor)
+    {
+    }
+
+    // 回傳player的pointer
+    Player *getPlayerAtIndex(int index)
+    {
+        if (index >= 0 && index < players.size())
+        {
+            return players[index];
+        }
+        else
+        {
+            // 处理索引越界的情况，这里返回nullptr，你可以根据需要修改
+            return nullptr;
+        }
+    }
+
+    // destructor
+    ~Game()
+    {
+        for (Player *player : players)
+        {
+            delete player;
+        }
+    }
+};
+
 int main()
 {
-    // 創建一個卡組
+    // initial setting
+    Game game; // 創建遊戲物件
     CardDeck deck;
-
-    // 顯示卡組內容
-    deck.displayDeck();
-
-    // 創建兩位玩家
-    // 創建一位 Seeker 玩家
-    Seeker seekerPlayer("Seeker1");
-    // 創建一位 Targetor 玩家
-    Targetor targetorPlayer("Targetor1");
-
-    // 玩家1抽一張牌
-    seekerPlayer.randomlyAddOneCard(deck);
-    seekerPlayer.randomlyAddOneCard(deck);
-    seekerPlayer.randomlyAddOneCard(deck);
-    cout << endl;
-
-    // 玩家2抽一張牌
-    targetorPlayer.randomlyAddOneCard(deck);
-    targetorPlayer.randomlyAddOneCard(deck);
-    targetorPlayer.randomlyAddOneCard(deck);
-    cout << endl;
-
-    // 顯示玩家手牌
-    seekerPlayer.showHand();
-    cout << endl;
-    targetorPlayer.showHand();
-    cout << endl;
-
-    // seeker發動能力
-    seekerPlayer.seekAnotherPlayer(&targetorPlayer);
-    seekerPlayer.seekDeck(deck);
-
-    // targetor發動能力
-    targetorPlayer.takeSpecificCard(deck, "Hearts", "5");
-    cout << endl;
-    targetorPlayer.discardCard(&seekerPlayer, 4);
-    cout << endl;
-
-    // 顯示玩家手牌
-    seekerPlayer.showHand();
-    cout << endl;
-    targetorPlayer.showHand();
-    cout << endl;
-
-    // 顯示卡組內容
-    deck.displayDeck();
+    cout << "Black Jack start!" << endl;
+    game.addPlayers();            // 加入玩家
+    game.showPlayersNameAndChr(); // 確認玩家資訊
+    game.initialDeal();           // 進行初始發牌
+    // game.showPlayersHands();      // 顯示每位玩家的手牌
+    game.playerMove(game.getPlayerAtIndex(0));
 
     return 0;
 }
