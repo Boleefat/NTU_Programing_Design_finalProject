@@ -697,7 +697,7 @@ int main()
         }
     }
 
-    // 询问玩家是否想要使用他们的特殊牌
+    // 詢問玩家是否要使用他們的道具牌
     for (int i = 0; i < game.numberOfPlayers(); ++i) {
         Player& currentPlayer = game.getPlayerAtIndex(i);
         cout << currentPlayer.getName() << ", do you want to use your special card? (yes/no): ";
