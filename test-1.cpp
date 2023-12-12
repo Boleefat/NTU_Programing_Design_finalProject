@@ -150,6 +150,37 @@ private:
     }
 };
 
+
+// 道具牌
+class SpecialCard : public Card {
+public:
+    string specialEffect; // 特殊效果
+
+    // 構造函數
+    SpecialCard(const string &s, const string &r, int v, const string &effect) 
+    : Card(s, r, v), specialEffect(effect) {}
+
+    void activateEffect(Deck &deck, Player &opponent, Player &currentPlayer) {
+        cout << "Activating special effect: " << specialEffect << endl;
+
+        if (specialEffect == "DoubleValue") {
+            this->value *= 2; // 加倍卡牌的值
+        } else if (specialEffect == "CardSwap") {
+            // 與牌堆頂部的牌交換
+            Card topCard = deck.drawCard();
+            swap(this->suit, topCard.suit);
+            swap(this->rank, topCard.rank);
+            swap(this->value, topCard.value);
+        } else if (specialEffect == "RandomEffect") {
+            // 實現一個隨機效果，例如增加硬幣、減少點數等
+            int randomEffect = rand() % 3; // 隨機選擇一個效果
+            if (randomEffect == 0) currentPlayer.increasePoints(10); 
+            else if (randomEffect == 1) currentPlayer.decreasePoints(5); 
+            else if (randomEffect == 2) currentPlayer.gainCoin(1); 
+        }
+    }
+};
+
 // Player////////////////////////////////////////
 class Player
 {
