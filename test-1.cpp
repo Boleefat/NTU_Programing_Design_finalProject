@@ -666,5 +666,17 @@ int main()
     // game.showPlayersHands();      // 顯示每位玩家的手牌
     game.playerMove(game.getPlayerAtIndex(0));
 
+    
+    // 通過猜大小遊戲來獲得道具牌
+    for (int i = 0; i < game.numberOfPlayers(); ++i) {
+        cout << "Player " << i + 1 << ", it's time to guess the size!" << endl;
+        if (game.guessSize(i)) {  // 猜測正確
+            // 獲得道具牌
+            SpecialCard specialCard = game.getSpecialCard();
+            game.giveCardToPlayer(specialCard, i);
+        }
+    }
+
+
     return 0;
 }
