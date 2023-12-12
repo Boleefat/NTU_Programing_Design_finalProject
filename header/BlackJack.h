@@ -15,8 +15,8 @@ class Seeker;
 class Targetor;
 
 // 還沒寫到的
-class Enemy;
-class Item;
+class Enemy;  // 要繼承Player
+class Item;   // 道具卡
 
 
 
