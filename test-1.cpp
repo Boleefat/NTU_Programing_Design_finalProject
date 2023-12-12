@@ -223,6 +223,10 @@ public:
     }
 }
 
+    // 檢查玩家是否有特殊牌
+    bool hasSpecialCard() const {
+        return hasSpecial;
+    }
 
 protected:
     string name;
@@ -692,6 +696,18 @@ int main()
             game.giveCardToPlayer(specialCard, i);
         }
     }
+
+    // 询问玩家是否想要使用他们的特殊牌
+    for (int i = 0; i < game.numberOfPlayers(); ++i) {
+        Player& currentPlayer = game.getPlayerAtIndex(i);
+        cout << currentPlayer.getName() << ", do you want to use your special card? (yes/no): ";
+        string response;
+        cin >> response;
+        if (response == "yes" && currentPlayer.hasSpecialCard()) {
+            specialCard.activateEffect(deck, currentPlayer);
+        }
+    }
+
 
     game.playerMove(game.getPlayerAtIndex(0));
     return 0;
