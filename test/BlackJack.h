@@ -242,13 +242,16 @@ class Game
 {
 private:
     CardDeck gameDeck;        // 遊戲的卡片牌組
-    vector<Player *> players; // 儲存Player的ptr
-    vector<Item *> items ;    // 儲存Item的ptr
+    vector<Player*> players; // 儲存Player的ptr
+    vector<Item*> items ;    // 儲存Item的ptr
     
 public:
     
-    // 將 Player 加入 players 向量
-    void addPlayer(Player *player);
+    // 將 Item 加入 items的vector
+    void addItem(Item* item);
+    
+    // 將 Player 加入 players的vector
+    void addPlayer(Player* player);
 
     // 建立players的vector
     void addPlayers();
@@ -259,8 +262,8 @@ public:
     // 讓玩家輸入Y以繼續遊戲
     void enterYtoContinue() const;
     
-    // 印出角色介紹
-    void characterIntro() const;
+    // 印出介紹
+    void intro(const string) const;
 
     // 進行初始發牌，每位玩家隨機抽兩張卡
     void initialDeal();
