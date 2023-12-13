@@ -73,7 +73,7 @@ void Game::addPlayers()
         }
     }
     
-    this->characterIntro();
+    this->intro("characters");
     
     // 動態建立玩家，加入遊戲
     for (int i = 0; i < numPlayers; ++i)
@@ -122,12 +122,12 @@ void Game::addPlayers()
 
 
 // 印出角色介紹
-void Game::characterIntro() const
+void Game::intro(const string file) const
 {
-    ifstream intro("./characters/intro.txt");
+    ifstream intro("./intros/"+ file +".txt");
     if(intro)
     {
-        cout << "Here's the introduction of the characters:" << endl
+        cout << "Here's the introduction of the "+ file +":" << endl
         << "------------------------------";
         char line[100];
         while(!intro.eof())
@@ -376,6 +376,48 @@ void Game::enterYtoContinue() const
     cout << "----------------------------------------" << endl;
 }
 
+
+// 新增item到遊戲
+void Game::addItem(Item* item)
+{
+    /*while (true)
+    {
+        char itemType = '0';
+        cout << "Choose ONE item for "+ playerName +": "<< endl
+        << "- Enter 1 to choose Random Switch" << endl
+        << "- Enter 2 to choose Draw One, Choose One" << endl
+        << "- Enter 3 to choose Both Give up One" << endl
+        << "- ";
+        
+        cin >> itemType;
+        try
+        {
+            Player *newPlayer = nullptr;
+            
+            if (playerCharacter == "S")
+            {
+                newPlayer = new Seeker(playerName);
+            }
+            else if (playerCharacter == "T")
+            {
+                newPlayer = new Targetor(playerName);
+            }
+            else
+            {
+                throw invalid_argument("Invalid player class");
+            }
+            
+            // 將玩家加入遊戲
+            players.push_back(newPlayer);
+            
+            break; // 跳出無窮迴圈，因為輸入正確
+        }
+        catch (const invalid_argument &e)
+        {
+            cout << e.what() << " Please try again." << endl;
+        }
+    }*/
+}
 
 // destructor
 Game::~Game()
