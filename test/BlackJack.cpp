@@ -636,7 +636,7 @@ void Targetor::discardCard(Player *targetPlayer, int value)
 
 
 
-/* Enemy class, 繼承 Player 這個類別 ----------------
+/* Enemy class, 繼承 Player 這個類別 --------------------------------
  是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性 */
 
 // Constructor for Enemy
@@ -644,7 +644,7 @@ Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 
 
 
-/* Item class 道具卡 ----------------------------------------
+/* Item class 道具卡 ------------------------------------------------
 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
 
 // 建構函式
@@ -659,21 +659,43 @@ string Item::getName () const { return this->name; }
 
 
 // 道具卡 1：和另一位玩家交換一張牌
-void SwitchCard::useItem(Player*& target)
+void SwitchCard::useItem(Player*& target, CardDeck &deck)
 {
     
 }
 
 
 // 道具卡 2：重新抽一張牌, 並選擇是否拿來換掉自己的一張牌
-void ReDrawCard::useItem(Player*& target)
+void ReDrawCard::useItem(Player*& target, CardDeck &deck)
 {
-    
+    owner->randomlyAddOneCard(deck);
+    cout << "Do you want to switch this card with one of your cards on hand?" << endl;
+    while(true)
+    {
+        cout << "(Enter Y for Yes. Enter N for No.): ";
+        char enter = 'N';
+        cin >> enter;
+        if(enter == 'Y')
+        {
+            string rank = "NULL", suit = "NULL";
+            cout << "Enter the RANK of the card that you DON'T want: ";
+            cin >> rank;
+            cout << "Enter the SUIT of the card that you DON'T want: ";
+            cin >> suit;
+
+            break;
+        }
+        else if(enter == 'N')
+        {
+            cout << owner->getName() << " did not switch his cards.";
+            break;
+        }
+    }
 }
 
 
 // 道具卡 3：捨棄自己的一張牌
-void DisCard::useItem(Player*& target)
+void DisCard::useItem(Player*& target, CardDeck &deck)
 {
     
 }
