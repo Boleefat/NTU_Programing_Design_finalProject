@@ -38,9 +38,9 @@ class Record;  // 玩家的記錄檔
 // Card struct -------------------------------------------
 struct Card
 {
-    string suit;
-    string rank;
-    int value;
+    string suit;  // 花色
+    string rank;  // 牌面數字
+    int value;    // 換算點數
     bool isInDeck;
 
     // 建構函式
@@ -70,9 +70,9 @@ class Player
 protected:
     string name;
     vector<Card> hand;
-    
     SkillCounter skillCounter;
     Record* record;
+    
 public:
     virtual ~Player() = default; // 虛擬析構函數
 
@@ -138,6 +138,45 @@ public:
     void discardCard(Player *targetPlayer, int value);
 };
 
+/* Item class 道具卡 ----------------------------------------
+道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
+
+class Item
+{
+protected:
+    string name;    // 道具卡名稱
+    Player* owner;  // 擁有者
+    
+public:
+    Item(const string &itemName, Player*& owner);
+    string getName () const;
+    virtual void useItem(Player*& target) = 0;
+};
+
+
+// 道具卡 1：和另一位玩家交換一張牌
+class SwitchCard: public Item
+{
+public:
+    void useItem(Player*& target);
+};
+
+
+// 道具卡 2：重新抽一張牌, 選擇是否拿來換掉自己的一張牌
+class ReDrawCard: public Item
+{
+public:
+    void useItem(Player*& target);
+};
+
+
+// 道具卡 3：捨棄自己的一張牌
+class DisCard: public Item
+{
+public:
+    void useItem(Player*& target);
+};
+
 
 
 
@@ -195,7 +234,8 @@ class Game
 {
 private:
     CardDeck gameDeck;        // 遊戲的卡片牌組
-    vector<Player *> players; // 儲存player的ptr
+    vector<Player *> players; // 儲存Player的ptr
+    vector<Item *> items ;    // 儲存Item的ptr
     
 public:
     
@@ -210,6 +250,9 @@ public:
     
     // 讓玩家輸入Y以繼續遊戲
     void enterYtoContinue() const;
+    
+    // 印出角色介紹
+    void characterIntro() const;
 
     // 進行初始發牌，每位玩家隨機抽兩張卡
     void initialDeal();
@@ -257,4 +300,3 @@ public:
     void updateRecord(int cardCnt, int pointCnt, int winStreak);  // 更新玩家檔案
     void print() const;  // 列印玩家檔案
 };
-
