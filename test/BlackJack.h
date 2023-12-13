@@ -70,10 +70,14 @@ class Player
 protected:
     string name;
     vector<Card> hand;
+    
     SkillCounter skillCounter;
     Record* record;
+    
+    
 public:
     virtual ~Player() = default; // 虛擬析構函數
+    
     Player(const string &playerName);
 
     bool operator<(const Player &other) const;
@@ -193,21 +197,23 @@ public:
 class Game
 {
 private:
-    vector<Player *> players; // 儲存player的ptr
     CardDeck gameDeck;        // 遊戲的卡片牌組
-
-public:
-    // 讓玩家輸入Y以繼續遊戲
-    void enterYtoContinue() const;
+    vector<Player *> players; // 儲存player的ptr
     
-    // Size of players
-    int getNumPlayers() const;
-
+    
+public:
+    
     // 將 Player 加入 players 向量
     void addPlayer(Player *player);
 
     // 建立players的vector
     void addPlayers();
+    
+    // Size of players
+    int getNumPlayers() const;
+    
+    // 讓玩家輸入Y以繼續遊戲
+    void enterYtoContinue() const;
 
     // 進行初始發牌，每位玩家隨機抽兩張卡
     void initialDeal();
@@ -255,3 +261,4 @@ public:
     void updateRecord(int cardCnt, int pointCnt, int winStreak);  // 更新玩家檔案
     void print() const;  // 列印玩家檔案
 };
+
