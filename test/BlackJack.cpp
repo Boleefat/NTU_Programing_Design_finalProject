@@ -69,22 +69,7 @@ void Game::addPlayers()
         }
     }
     
-    
-    // 職業介紹
-    ifstream intro("./characters/intro.txt");
-    if(intro)
-    {
-        cout << "Here's the introduction of the characters:" << endl
-        << "------------------------------";
-        char line[100];
-        while(!intro.eof())
-        {
-            intro.getline(line,100);
-            cout << endl << line;
-        }
-    }
-    intro.close();
-    cout << "**************************************************" << endl;
+    this->characterIntro();
     
     // 動態建立玩家，加入遊戲
     for (int i = 0; i < numPlayers; ++i)
@@ -132,12 +117,33 @@ void Game::addPlayers()
 }
 
 
+// 印出角色介紹
+void Game::characterIntro() const
+{
+    ifstream intro("./characters/intro.txt");
+    if(intro)
+    {
+        cout << "Here's the introduction of the characters:" << endl
+        << "------------------------------";
+        char line[100];
+        while(!intro.eof())
+        {
+            intro.getline(line,100);
+            cout << endl << line;
+        }
+    }
+    intro.close();
+    cout << "**************************************************" << endl;
+}
+
+
 // 進行初始發牌，每位玩家隨機抽兩張卡
 void Game::initialDeal()
 {
     cout << "Game Begins!" << endl;
     for (Player *player : players)
-    { // 每位玩家抽兩張卡
+    {
+        // 每位玩家抽兩張卡
         Card *drawnCard1 = gameDeck.drawOneCard();
         Card *drawnCard2 = gameDeck.drawOneCard();
         // 將抽到的卡片加入玩家手牌
@@ -173,7 +179,7 @@ void Game::showPlayersNameAndChr() const
         }
         cout << endl;
     }
-    enterYtoContinue();
+    this->enterYtoContinue();
 }
 
 
@@ -638,6 +644,39 @@ Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 
 
 
+/* Item class 道具卡 ----------------------------------------
+道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
+
+// 建構函式
+Item::Item(const string &itemName, Player*& owner)
+{
+    this->name = itemName;
+    this->owner = owner;
+}
+
+// 取得道具卡名稱
+string Item::getName () const { return this->name; }
+
+
+// 道具卡 1：和另一位玩家交換一張牌
+void SwitchCard::useItem(Player*& target)
+{
+    
+}
+
+
+// 道具卡 2：重新抽一張牌, 並選擇是否拿來換掉自己的一張牌
+void ReDrawCard::useItem(Player*& target)
+{
+    
+}
+
+
+// 道具卡 3：捨棄自己的一張牌
+void DisCard::useItem(Player*& target)
+{
+    
+}
 
 
 // CardDeck class ------------------------------------
