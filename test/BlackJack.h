@@ -73,29 +73,26 @@ protected:
     
     SkillCounter skillCounter;
     Record* record;
-    
-    
 public:
     virtual ~Player() = default; // 虛擬析構函數
-    
+
     Player(const string &playerName);
-
-    bool operator<(const Player &other) const;
-
-    bool operator>(const Player &other) const;
-
-    int calculateHandValue() const;
-
-    void showHand() const;
-
-    void randomlyAddOneCard(CardDeck &deck);
-
-    // 在 Player 類別中新增函式
-    void addSpecificCard(Card *card);
 
     string getName() const;
 
     vector<Card> &getHand();
+
+    void showHand() const;
+
+    int calculateHandValue() const;
+    
+    bool operator<(const Player &other) const;
+
+    bool operator>(const Player &other) const;
+
+    void randomlyAddOneCard(CardDeck &deck);
+
+    void addSpecificCard(Card *card);
 };
 
 
@@ -199,7 +196,6 @@ class Game
 private:
     CardDeck gameDeck;        // 遊戲的卡片牌組
     vector<Player *> players; // 儲存player的ptr
-    
     
 public:
     
