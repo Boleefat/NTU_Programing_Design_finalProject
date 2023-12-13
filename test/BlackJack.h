@@ -21,8 +21,8 @@ class Enemy;     // 由電腦操作的莊家, 繼承自Player
 
 class Item;  // 道具卡 目前有3種
 class RandomSwitch;
-class DrawOneChooseOne;
-class BothGaveUpOne;
+class DrawOneFoldOne;
+class BothFoldOne;
 
 class Game;
 class CardDeck;
@@ -201,10 +201,10 @@ protected:
     CardDeck deck;  // 所屬牌組
     
 public:
-    Item(const string &itemName, Player*& owner, CardDeck& deck);
+    Item(Player*& owner, CardDeck& deck);
     string getName () const;
     virtual void useItem(Player*& target) = 0;
-    void gaveUpOneCard(Player*& target);
+    void foldOneCard(Player*& target);
     int chooseHandCard(Player*& target);
 };
 
@@ -213,23 +213,26 @@ public:
 class RandomSwitch: public Item
 {
 public:
+    RandomSwitch(Player*& owner, CardDeck& deck);
     void useItem(Player*& target);
     int generateRandomNumber(int small, int large);
 };
 
 
 // 道具卡 2：重新抽一張牌, 棄掉自己一張牌
-class DrawOneChooseOne: public Item
+class DrawOneFoldOne: public Item
 {
 public:
+    DrawOneFoldOne(Player*& owner, CardDeck& deck);
     void useItem(Player*& target);
 };
 
 
 // 道具卡 3：雙方各棄掉一張牌
-class BothGaveUp: public Item
+class BothFoldOne: public Item
 {
 public:
+    BothFoldOne(Player*& owner, CardDeck& deck);
     void useItem(Player*& target);
 };
 
@@ -247,8 +250,8 @@ private:
     
 public:
     
-    // 將 Item 加入 items的vector
-    void addItem(Item* item);
+    // 將 Item 加入遊戲給玩家
+    void addItem(Player*& player);
     
     // 將 Player 加入 players的vector
     void addPlayer(Player* player);
