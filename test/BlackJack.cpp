@@ -39,7 +39,7 @@ int Game::getNumPlayers() const
 }
 
 
-// 將 Player 加入 players 向量
+// 將 Player 加入 players的vector
 void Game::addPlayer(Player *player)
 {
     players.push_back(player);
@@ -378,37 +378,41 @@ void Game::enterYtoContinue() const
 
 
 // 新增item到遊戲
-void Game::addItem(Item* item)
+void Game::addItem(Player*& player)
 {
-    /*while (true)
+    while (true)
     {
         char itemType = '0';
-        cout << "Choose ONE item for "+ playerName +": "<< endl
+        cout << "Please choose ONE Item Card for "+ player->getName() +":"<< endl
         << "- Enter 1 to choose Random Switch" << endl
-        << "- Enter 2 to choose Draw One, Choose One" << endl
-        << "- Enter 3 to choose Both Give up One" << endl
-        << "- ";
+        << "- Enter 2 to choose Draw One, Fold One" << endl
+        << "- Enter 3 to choose Both Fold One" << endl
+        << "- You choose: ";
         
         cin >> itemType;
         try
         {
-            Player *newPlayer = nullptr;
+            Item* newItem = nullptr;
             
-            if (playerCharacter == "S")
+            if (itemType == '1')
             {
-                newPlayer = new Seeker(playerName);
+                newItem = new RandomSwitch(player, this->gameDeck);
             }
-            else if (playerCharacter == "T")
+            else if (itemType == '2')
             {
-                newPlayer = new Targetor(playerName);
+                newItem = new DrawOneFoldOne(player, this->gameDeck);
+            }
+            else if (itemType == '3')
+            {
+                newItem = new BothFoldOne(player, this->gameDeck);
             }
             else
             {
-                throw invalid_argument("Invalid player class");
+                throw invalid_argument("Invalid item class");
             }
             
-            // 將玩家加入遊戲
-            players.push_back(newPlayer);
+            // 將道具加入遊戲
+            items.push_back(newItem);
             
             break; // 跳出無窮迴圈，因為輸入正確
         }
@@ -416,7 +420,7 @@ void Game::addItem(Item* item)
         {
             cout << e.what() << " Please try again." << endl;
         }
-    }*/
+    }
 }
 
 // destructor
@@ -696,9 +700,9 @@ Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
 
 // 建構函式
-Item::Item(const string &itemName, Player*& owner, CardDeck& deck)
+Item::Item(Player*& owner, CardDeck& deck)
 {
-    this->name = itemName;
+    this->name = "NULL";
     this->owner = owner;
     this->deck = deck;
 }
@@ -707,9 +711,9 @@ Item::Item(const string &itemName, Player*& owner, CardDeck& deck)
 string Item::getName () const { return this->name; }
 
 // 叫玩家選一張牌捨棄
-void Item::gaveUpOneCard(Player*& target)
+void Item::foldOneCard(Player*& target)
 {
-    cout << target->getName() +", please choose ONE card on YOUR hand to DISCARD..." << endl;
+    cout << target->getName() +", please choose ONE card on YOUR hand to FOLD..." << endl;
     target->showHand();
     while(true)
     {
@@ -717,7 +721,7 @@ void Item::gaveUpOneCard(Player*& target)
         if(index != -1)
         {
             target->getHand().erase(target->getHand().begin()+index);
-            cout << "Discard successfully!";
+            cout << "Card folded successfully.";
             target->showHand();
             break;
         }
@@ -746,14 +750,20 @@ int Item::chooseHandCard(Player*& target)
 
 
 // 道具卡 1：和另一位玩家隨機交換一張牌
+RandomSwitch::RandomSwitch(Player*& owner, CardDeck& deck) : Item(owner, deck)
+{
+    this->name = "RandomSwitch";
+}
+
 void RandomSwitch::useItem(Player*& target)
 {
+    cout << "Item used: Random Switch" << endl;
     int ownerRandom = generateRandomNumber(0 , owner -> getHand().size()-1);
     int targetRandom = generateRandomNumber(0, target -> getHand().size()-1);
     //cout << "Randomly selected indices: " << random_user << " and " << random_target << endl;
     swap( owner->getHand()[ownerRandom], target->getHand()[targetRandom]);
     //cout << "Cards exchanged successfully!" << endl;
-    cout << "Switching done";
+    cout << "Cards were switched successfully." << endl;
     
 }
 
@@ -768,26 +778,36 @@ int RandomSwitch::generateRandomNumber(int small, int large)
 
 
 // 道具卡 2：重新抽一張牌, 棄掉一張牌
-void DrawOneChooseOne::useItem(Player*& target)
+DrawOneFoldOne::DrawOneFoldOne(Player*& owner, CardDeck& deck) : Item(owner, deck)
+{
+    this->name = "DrawOneFoldOne";
+}
+
+void DrawOneFoldOne::useItem(Player*& target)
 {
     Card* reDraw = deck.drawOneCard();
-    cout << "Item used: ReDraw One Card" << endl
+    cout << "Item used: Draw One, Fold One Card" << endl
     << "- The new card you've drawn: ";
     reDraw->print();
     
-    this->gaveUpOneCard(target);
+    this->foldOneCard(target);
     
     target->addSpecificCard(reDraw);
     target->showHand();
 }
 
 
-// 道具卡 3：雙方各棄掉一張牌, 但對方先棄
-void BothGaveUp::useItem(Player*& target)
+// 道具卡 3：雙方各棄掉一張牌, 由對方先棄
+BothFoldOne::BothFoldOne(Player*& owner, CardDeck& deck) : Item(owner, deck)
 {
-    cout << "Item used: Both gave up ONE card" << endl;
-    this->gaveUpOneCard(target);
-    this->gaveUpOneCard(this->owner);
+    this->name = "BothFoldOne";
+}
+
+void BothFoldOne::useItem(Player*& target)
+{
+    cout << "Item used: Both Fold One" << endl;
+    this->foldOneCard(target);
+    this->foldOneCard(this->owner);
 }
 
 
