@@ -24,7 +24,9 @@ SkillCounter::SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(tr
 
 
 
-// Game class ------------------------------------------------
+/* Game class --------------------------------------
+隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動 */
+
 
 // Size of players
 int Game::getNumPlayers() const
@@ -376,7 +378,8 @@ Game::~Game()
 
 
 
-// Player class ---------------------------------------
+/* Player class, 是一個pure abstract class --------------------------
+ 是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
 // 建構函式
 Player::Player(const string &playerName) : name(playerName), skillCounter{}, record(nullptr)
@@ -495,15 +498,11 @@ vector<Card> &Player::getHand()
 
 
 
-// Enemy class, 繼承自Player --------------------------------------------------
-
-// Constructor for Enemy
-Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 
 
+/* Seeker class, 繼承 Player 這個類別 ------------------
+是玩遊戲的人可以選擇的我方角色，定義所有Seeker的共同屬性 */
 
-
-// Seeker class, 繼承自Player --------------------------------------------
 
 // Constructor for Seeker
 Seeker::Seeker(const string &playerName) : Player(playerName)
@@ -551,7 +550,8 @@ void Seeker::seekDeck(CardDeck &deck)
 
 
 
-// Targetor class, 繼承自Player ---------------------------------
+/* Targetor class, 繼承 Player 這個類別 ------------------
+是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性 */
 
 // Constructor for Targetor
 Targetor::Targetor(const string &playerName) : Player(playerName)
@@ -630,84 +630,11 @@ void Targetor::discardCard(Player *targetPlayer, int value)
 
 
 
-// Record class -------------------------------------
+/* Enemy class, 繼承 Player 這個類別 ----------------
+ 是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性 */
 
-// 建構函式
-Record::Record(string playerName)
-{
-    // 注意：檔名不分大小寫
-    this->playerName = playerName;
-    this->filePath = "./records/" + playerName + ".txt";
-    
-    cout
-    << "Searching for "+ playerName +"'s game record..." << endl;
-    
-    ifstream searchFile(filePath);
-    if (searchFile)
-    {
-        cout << "- We found "+ playerName +"'s game record file!" << endl;
-        searchFile >> maxCards >> maxPoints >> maxWinStreak;
-    }
-    else
-    {
-        cout << "- "+ playerName + "'s game record file does NOT exist." << endl
-        << "- Creating new game record file for "+ playerName +"..." << endl;
-        maxCards = 0;
-        maxPoints = 0;
-        maxWinStreak = 0;
-        ofstream newFile(filePath);
-        if (!newFile)
-            cout << "ERROR! Failed to create file!" << endl;
-        else
-        {
-            newFile << maxCards << " " << maxPoints << " " << maxWinStreak;
-        }
-        newFile.close();
-    }
-    searchFile.close();
-    cout << "**************************************************" << endl;
-}
-
-
-// 更新玩家檔案
-void Record::updateRecord(int cardCnt, int pointCnt, int winStreak)
-{
-    if (cardCnt > maxCards || pointCnt > maxPoints || winStreak > maxWinStreak)
-    {
-        ofstream recordFile(filePath, ios::trunc);
-        if (!recordFile)
-            cout << "ERROR! Failed to update record!" << endl;
-        else
-        {
-            if (cardCnt > maxCards)
-                this->maxCards = cardCnt;
-            if (pointCnt > maxPoints)
-                this->maxPoints = pointCnt;
-            if (winStreak > maxWinStreak)
-                this->maxWinStreak = winStreak;
-            cout << "Concrats!" << playerName << "break his/her record!" << endl;
-            this->print();
-            recordFile << cardCnt << " "
-                       << pointCnt << " "
-                       << winStreak;
-        }
-        recordFile.close();
-    }
-    else
-        cout << playerName << "did not break his/her record." << endl;
-}
-
-
-// 列印玩家檔案
-void Record::print() const
-{
-    cout
-    << "Max cards per round: " << maxCards << endl
-    << "Max points per round: " << maxPoints << endl
-    << "Max win streaks: " << maxWinStreak << endl;
-         
-}
-
+// Constructor for Enemy
+Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 
 
 
@@ -834,4 +761,87 @@ void CardDeck::initializeCards()
     {
         card.isInDeck = true;
     }
+}
+
+
+
+
+
+
+// Record class -------------------------------------
+
+// 建構函式
+Record::Record(string playerName)
+{
+    // 注意：檔名不分大小寫
+    this->playerName = playerName;
+    this->filePath = "./records/" + playerName + ".txt";
+    
+    cout
+    << "Searching for "+ playerName +"'s game record..." << endl;
+    
+    ifstream searchFile(filePath);
+    if (searchFile)
+    {
+        cout << "- We found "+ playerName +"'s game record file!" << endl;
+        searchFile >> maxCards >> maxPoints >> maxWinStreak;
+    }
+    else
+    {
+        cout << "- "+ playerName + "'s game record file does NOT exist." << endl
+        << "- Creating new game record file for "+ playerName +"..." << endl;
+        maxCards = 0;
+        maxPoints = 0;
+        maxWinStreak = 0;
+        ofstream newFile(filePath);
+        if (!newFile)
+            cout << "ERROR! Failed to create file!" << endl;
+        else
+        {
+            newFile << maxCards << " " << maxPoints << " " << maxWinStreak;
+        }
+        newFile.close();
+    }
+    searchFile.close();
+    cout << "**************************************************" << endl;
+}
+
+
+// 更新玩家檔案
+void Record::updateRecord(int cardCnt, int pointCnt, int winStreak)
+{
+    if (cardCnt > maxCards || pointCnt > maxPoints || winStreak > maxWinStreak)
+    {
+        ofstream recordFile(filePath, ios::trunc);
+        if (!recordFile)
+            cout << "ERROR! Failed to update record!" << endl;
+        else
+        {
+            if (cardCnt > maxCards)
+                this->maxCards = cardCnt;
+            if (pointCnt > maxPoints)
+                this->maxPoints = pointCnt;
+            if (winStreak > maxWinStreak)
+                this->maxWinStreak = winStreak;
+            cout << "Concrats!" << playerName << "break his/her record!" << endl;
+            this->print();
+            recordFile << cardCnt << " "
+                       << pointCnt << " "
+                       << winStreak;
+        }
+        recordFile.close();
+    }
+    else
+        cout << playerName << "did not break his/her record." << endl;
+}
+
+
+// 列印玩家檔案
+void Record::print() const
+{
+    cout
+    << "Max cards per round: " << maxCards << endl
+    << "Max points per round: " << maxPoints << endl
+    << "Max win streaks: " << maxWinStreak << endl;
+         
 }
