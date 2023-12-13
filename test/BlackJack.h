@@ -14,21 +14,21 @@ struct SkillCounter;
 
 // classes ------------------------
 
-class Player;  // 必須是一個純粹抽象類別（pure abstract class）
+class Player;    // 必須是一個純粹抽象類別（pure abstract class）
+class Seeker;    // 由玩家操作的Character, 繼承自Player
+class Targetor;  // 由玩家操作的Character, 繼承自Player
+class Enemy;     // 由電腦操作的莊家, 繼承自Player
 
-// 兩種Characters, 繼承自Player
-class Seeker;
-class Targetor;
+class Item;  // 道具卡 目前有3種
+class RandomSwitch;
+class DrawOneChooseOne;
+class BothGaveUpOne;
 
-// 由電腦操作的莊家, 繼承自Player
-class Enemy;
-
-class CardDeck;
 class Game;
+class CardDeck;
+class Record;
 
 
-class Item;  // 道具卡 還沒寫
-class Record;  // 玩家的記錄檔
 
 
 
@@ -45,6 +45,9 @@ struct Card
 
     // 建構函式
     Card(const string &s, const string &r, int v);
+    
+    // 印出Card資訊
+    void print() const;
 };
 
 
@@ -62,7 +65,7 @@ struct SkillCounter
 
 
 
-/* Player class, 是一個pure abstract class -----------------------------
+/* Player class, 是一個pure abstract class ------------------------------
  是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
 class Player
@@ -99,7 +102,7 @@ public:
 
 
 
-/* Seeker class, 繼承 Player 這個類別 ---------------------------
+/* Seeker class, 繼承 Player 這個類別 ----------------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Seeker的共同屬性 */
 
 class Seeker : public Player
@@ -120,7 +123,7 @@ public:
 
 
 
-/* Targetor class, 繼承 Player 這個類別 ----------------------
+/* Targetor class, 繼承 Player 這個類別 -----------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性 */
 
 class Targetor : public Player
@@ -138,50 +141,10 @@ public:
     void discardCard(Player *targetPlayer, int value);
 };
 
-/* Item class 道具卡 ----------------------------------------
-道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
-
-class Item
-{
-protected:
-    string name;    // 道具卡名稱
-    Player* owner;  // 擁有者
-    
-public:
-    Item(const string &itemName, Player*& owner);
-    string getName () const;
-    virtual void useItem(Player*& target, CardDeck &deck) = 0;
-};
-
-
-// 道具卡 1：和另一位玩家交換一張牌
-class SwitchCard: public Item
-{
-public:
-    void useItem(Player*& target, CardDeck &deck);
-};
-
-
-// 道具卡 2：重新抽一張牌, 選擇是否拿來換掉自己的一張牌
-class ReDrawCard: public Item
-{
-public:
-    void useItem(Player*& target, CardDeck &deck);
-};
-
-
-// 道具卡 3：捨棄自己的一張牌
-class DisCard: public Item
-{
-public:
-    void useItem(Player*& target, CardDeck &deck);
-};
 
 
 
-
-
-/* Enemy class, 繼承 Player 這個類別 --------------------------
+/* Enemy class, 繼承 Player 這個類別 ---------------------------
  是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性 */
 
 class Enemy : public Player
@@ -194,7 +157,7 @@ public:
 
 
 
-// CardDeck class ---------------------------------------
+// CardDeck class -------------------------------------------
 class CardDeck
 {
 private:
@@ -227,7 +190,52 @@ public:
 
 
 
-/* Game class -------------------------------------------
+/* Item class 道具卡 ---------------------------------------------
+道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
+
+class Item
+{
+protected:
+    string name;    // 道具卡名稱
+    Player* owner;  // 擁有者
+    CardDeck deck;  // 所屬牌組
+    
+public:
+    Item(const string &itemName, Player*& owner, CardDeck& deck);
+    string getName () const;
+    virtual void useItem(Player*& target) = 0;
+    void gaveUpOneCard(Player*& target);
+    int chooseHandCard(Player*& target);
+};
+
+
+// 道具卡 1：和另一位玩家隨機交換一張牌
+class RandomSwitch: public Item
+{
+public:
+    void useItem(Player*& target);
+    int generateRandomNumber(int small, int large);
+};
+
+
+// 道具卡 2：重新抽一張牌, 棄掉自己一張牌
+class DrawOneChooseOne: public Item
+{
+public:
+    void useItem(Player*& target);
+};
+
+
+// 道具卡 3：雙方各棄掉一張牌
+class BothGaveUp: public Item
+{
+public:
+    void useItem(Player*& target);
+};
+
+
+
+/* Game class --------------------------------------------------
 隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動 */
 
 class Game
@@ -286,7 +294,7 @@ public:
 
 
 
-// Record class -------------------------------------
+// Record class --------------------------------------------
 class Record
 {
 private:
