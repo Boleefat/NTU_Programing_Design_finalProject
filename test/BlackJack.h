@@ -150,7 +150,7 @@ protected:
 public:
     Item(const string &itemName, Player*& owner);
     string getName () const;
-    virtual void useItem(Player*& target) = 0;
+    virtual void useItem(Player*& target, CardDeck &deck) = 0;
 };
 
 
@@ -158,7 +158,7 @@ public:
 class SwitchCard: public Item
 {
 public:
-    void useItem(Player*& target);
+    void useItem(Player*& target, CardDeck &deck);
 };
 
 
@@ -166,7 +166,7 @@ public:
 class ReDrawCard: public Item
 {
 public:
-    void useItem(Player*& target);
+    void useItem(Player*& target, CardDeck &deck);
 };
 
 
@@ -174,7 +174,7 @@ public:
 class DisCard: public Item
 {
 public:
-    void useItem(Player*& target);
+    void useItem(Player*& target, CardDeck &deck);
 };
 
 
