@@ -13,7 +13,11 @@ using namespace std;
 // 建構函式
 Card::Card(const string &s, const string &r, int v) : suit(s), rank(r), value(v), isInDeck(true) {}
 
-
+// 印出Card資訊
+void Card::print() const
+{
+    cout << suit << "-" << rank << ", value: " << value << endl;
+}
 
 
 // SkillCounter struct ----------------------------
@@ -83,7 +87,7 @@ void Game::addPlayers()
         while (true)
         {
             cout << "Choose character for Player " << i + 1 << endl
-            << " (Enter S to choose Seeker. Enter T to choose Targetor): ";
+            << " (Enter S to choose Seeker, Enter T to choose Targetor): ";
             cin >> playerCharacter;
             
             try
@@ -133,7 +137,7 @@ void Game::characterIntro() const
         }
     }
     intro.close();
-    cout << "**************************************************" << endl;
+    cout << "************************************************************" << endl;
 }
 
 
@@ -159,7 +163,7 @@ void Game::showPlayersNameAndChr() const
     cout << "Players Information:" << endl;
     for (const Player *player : players)
     {
-        cout << "Name: " << player->getName() << ", Character: ";
+        cout << "- Name: " << player->getName() << ", Character: ";
 
         // 使用 dynamic_cast 來檢查實際型別
         const Seeker *seeker = dynamic_cast<const Seeker *>(player);
@@ -251,6 +255,7 @@ void Game::seekerMove(Seeker *seeker)
 
         if (move == 'A' || move == 'S' || move == 'N')
         {
+            cout << "************************************************************" << endl;
             break; // 輸入正確，跳出迴圈
         }
         else
@@ -265,8 +270,8 @@ void Game::seekerMove(Seeker *seeker)
     {
     case 'A':
         seeker->randomlyAddOneCard(gameDeck);
-        cout << "Adding a card..." << endl;
         break;
+            
     case 'S':
         int skillChoice;
         while (true)
@@ -361,13 +366,14 @@ Player *Game::getPlayerAtIndex(int index)
 // 讓玩家輸入Y以繼續遊戲
 void Game::enterYtoContinue() const
 {
+    cout << "----------------------------------------" << endl;
     char enter = 'N';
     while(enter != 'Y')
     {
         cout << "If you're ready, enter Y to continue: ";
         cin >> enter;
     }
-    cout << "------------------------------" << endl;
+    cout << "----------------------------------------" << endl;
 }
 
 
@@ -455,7 +461,7 @@ void Player::showHand() const
     
     for (const auto &card : hand)
     {
-        cout << card.suit << "-" << card.rank << ", value : " << card.value << endl;
+        cout << "- " << card.suit << "-" << card.rank << ", value : " << card.value << endl;
     }
     
     cout << "Total card value: " << calculateHandValue() << endl
@@ -470,7 +476,7 @@ void Player::randomlyAddOneCard(CardDeck &deck)
     if (drawnCard != nullptr)
     {
         hand.push_back(*drawnCard); // 添加該牌到玩家手牌中 ////注意這邊是shallow copy
-        cout << name << " get one card: " << drawnCard->suit << "-" << drawnCard->rank << ", value: " << drawnCard->value << endl;
+        cout << "- "+ name +" get one card: " << drawnCard->suit << "-" << drawnCard->rank << ", value: " << drawnCard->value << endl;
     }
     else
     {
@@ -648,56 +654,98 @@ Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
 
 // 建構函式
-Item::Item(const string &itemName, Player*& owner)
+Item::Item(const string &itemName, Player*& owner, CardDeck& deck)
 {
     this->name = itemName;
     this->owner = owner;
+    this->deck = deck;
 }
 
 // 取得道具卡名稱
 string Item::getName () const { return this->name; }
 
-
-// 道具卡 1：和另一位玩家交換一張牌
-void SwitchCard::useItem(Player*& target, CardDeck &deck)
+// 叫玩家選一張牌捨棄
+void Item::gaveUpOneCard(Player*& target)
 {
-    
-}
-
-
-// 道具卡 2：重新抽一張牌, 並選擇是否拿來換掉自己的一張牌
-void ReDrawCard::useItem(Player*& target, CardDeck &deck)
-{
-    owner->randomlyAddOneCard(deck);
-    cout << "Do you want to switch this card with one of your cards on hand?" << endl;
+    cout << target->getName() +", please choose ONE card on YOUR hand to DISCARD..." << endl;
+    target->showHand();
     while(true)
     {
-        cout << "(Enter Y for Yes. Enter N for No.): ";
-        char enter = 'N';
-        cin >> enter;
-        if(enter == 'Y')
+        int index = this->chooseHandCard(target);
+        if(index != -1)
         {
-            string rank = "NULL", suit = "NULL";
-            cout << "Enter the RANK of the card that you DON'T want: ";
-            cin >> rank;
-            cout << "Enter the SUIT of the card that you DON'T want: ";
-            cin >> suit;
-
-            break;
-        }
-        else if(enter == 'N')
-        {
-            cout << owner->getName() << " did not switch his cards.";
+            target->getHand().erase(target->getHand().begin()+index);
+            cout << "Discard successfully!";
+            target->showHand();
             break;
         }
     }
 }
 
-
-// 道具卡 3：捨棄自己的一張牌
-void DisCard::useItem(Player*& target, CardDeck &deck)
+// 選擇目標手牌
+int Item::chooseHandCard(Player*& target)
 {
+    string rank = "NULL", suit = "NULL";
+    cout << "- Enter the RANK of the card you choose: ";
+    cin >> rank;
+    cout << "- Enter the SUIT of the card you choose: ";
+    cin >> suit;
     
+    for(int i = 0; i = target->getHand().size(); i++)
+    {
+        if(target->getHand()[i].rank == rank
+           && target->getHand()[i].suit == suit)
+            return i;
+    }
+    
+    cout << "The card you chose was NOT found!";
+    return -1;
+}
+
+
+// 道具卡 1：和另一位玩家隨機交換一張牌
+void RandomSwitch::useItem(Player*& target)
+{
+    int ownerRandom = generateRandomNumber(0 , owner -> getHand().size()-1);
+    int targetRandom = generateRandomNumber(0, target -> getHand().size()-1);
+    //cout << "Randomly selected indices: " << random_user << " and " << random_target << endl;
+    swap( owner->getHand()[ownerRandom], target->getHand()[targetRandom]);
+    //cout << "Cards exchanged successfully!" << endl;
+    cout << "Switching done";
+    
+}
+
+// 亂數產生器
+int RandomSwitch::generateRandomNumber(int small, int large)
+{
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(small, large);
+        return dis(gen);
+}
+
+
+// 道具卡 2：重新抽一張牌, 棄掉一張牌
+void DrawOneChooseOne::useItem(Player*& target)
+{
+    Card* reDraw = deck.drawOneCard();
+    cout << "Item used: ReDraw One Card" << endl
+    << "- The new card you've drawn: ";
+    reDraw->print();
+    
+    this->gaveUpOneCard(target);
+    
+    target->addSpecificCard(reDraw);
+    target->showHand();
+}
+
+
+// 道具卡 3：雙方各棄掉一張牌, 但對方先棄
+void BothGaveUp::useItem(Player*& target)
+{
+    cout << "Item used: Both gave up ONE card" << endl;
+    this->gaveUpOneCard(target);
+    this->gaveUpOneCard(this->owner);
 }
 
 
@@ -864,7 +912,7 @@ Record::Record(string playerName)
         newFile.close();
     }
     searchFile.close();
-    cout << "**************************************************" << endl;
+    cout << "************************************************************" << endl;
 }
 
 
