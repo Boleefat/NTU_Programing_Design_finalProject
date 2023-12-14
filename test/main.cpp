@@ -14,78 +14,120 @@ int main()
     // initial setting
     Game game; // 創建遊戲物件
     CardDeck deck;
-    cout << "Welcome to Black Jack!" << endl;
+    cout << "Black Jack start!" << endl;
     game.addPlayers();            // 加入玩家
     game.showPlayersNameAndChr(); // 確認玩家資訊
     game.initialDeal();           // 進行初始發牌
-    int temp1 = 0;
-    int temp2 = 0;
-    Enemy enemy1("Enemy 1");
-    Enemy enemy2("Enemy 2");
-    game.addPlayer(&enemy1);
-    game.addPlayer(&enemy2);
-    for (int i = 0; i < 3; i++)
-    {
-        game.playerMove(static_cast<Player*>(&enemy1));
-        game.playerMove(static_cast<Player*>(&enemy2));
-    }
-    
-    do
-    {
-        
-        temp1 = game.getPlayerAtIndex(0)->calculateHandValue();
-        temp2 = game.getPlayerAtIndex(1)->calculateHandValue();
 
-        for (int i = 0; i < game.getNumPlayers(); i++)
-        {
-            game.playerMove(game.getPlayerAtIndex(i));
-        }
-        
-    }while(((temp1 != game.getPlayerAtIndex(0)->calculateHandValue()) || (temp2 != game.getPlayerAtIndex(1)->calculateHandValue())));
+    Enemy enemy("Banker");
+    game.addPlayer(&enemy);
+
+	
+	int temp1 = 0;
+	int temp2 = 0;
+	
+	do 
+    {
+    	game.enemyDraw(&enemy);
+    	
+    	for (int i = 0; i < game.getNumPlayers(); i++)
+    	{
+    		game.playerMove(game.getPlayerAtIndex(i));
+		}	
+		for (int i = 0; i < game.getNumPlayers(); i++)
+    	{
+    		if (i == 0)
+    		{
+    			game.playerDraw(game.getPlayerAtIndex(i), temp1);
+			}
+    		else if (i == 1)
+    		{
+    			game.playerDraw(game.getPlayerAtIndex(i), temp2);
+			}
+		}
+		
+	}while(temp1 != 1 && temp2 != 1);
     
     cout << "\nGame End\n";
-    // 檢查大家都小於等於 21 點
-    bool player1Under21 = game.getPlayerAtIndex(0)->calculateHandValue() <= 21;
+    
+    Player* player1 = game.getPlayerAtIndex(0);
+	Player* player2 = game.getPlayerAtIndex(1);
+	
+	bool player1Under21 = game.getPlayerAtIndex(0)->calculateHandValue() <= 21;
     bool player2Under21 = game.getPlayerAtIndex(1)->calculateHandValue() <= 21;
-    bool enemy1Under21 = enemy1.calculateHandValue() <= 21;
-    bool enemy2Under21 = enemy2.calculateHandValue() <= 21;
+    bool enemyUnder21 = enemy.calculateHandValue() <= 21;
 
-    // 比較四個物件的大小
-    if (player1Under21 && player2Under21 && enemy1Under21 && enemy2Under21)
-    {
-        if (*game.getPlayerAtIndex(0) > *game.getPlayerAtIndex(1) && enemy1 > enemy2)
-        {
-            cout << "\n" << game.getPlayerAtIndex(0)->getName() << " win!" << endl;
-        }
-        else if (*game.getPlayerAtIndex(1) > *game.getPlayerAtIndex(0) && enemy2 > enemy1)
-        {
-            cout << "\n" << game.getPlayerAtIndex(1)->getName() << " win!" << endl;
-        }
-        else
-        {
-            cout << "tied" << endl;
-        }
-    }
-    else
-    {
-        cout << "All players busted! No one wins." << endl;
-    }
-    
-    
-    /*
-    if (*game.getPlayerAtIndex(0) > *game.getPlayerAtIndex(1))
-    {
-        cout << "\n" << game.getPlayerAtIndex(0)->getName() << " win!" << endl;
-    }
-    else if (*game.getPlayerAtIndex(0) < *game.getPlayerAtIndex(1))
-    {
-        cout << "\n" << game.getPlayerAtIndex(1)->getName() << " win!" << endl;
-    }
-    else
-    {
-        cout << "tied" << endl;
-    }
-   */
- 
+
+	if (*player1 > *player2 && *player1 > enemy && player1Under21) {
+    	// player1 win
+    	cout << "\n" << player1->getName() << " wins!" << endl;
+	}
+	else if (*player2 > *player1 && *player2 > enemy && player2Under21) {
+    	// player2 win
+    	cout << "\n" << player2->getName() << " wins!" << endl;
+	}
+	else if (*player1 > *player2 && *player1 > enemy && !player1Under21) {
+    	// player1 > player2 > enemy, but player1 is over 21
+    	if (!player2Under21) {
+        	// player2 is also over 21, compare with enemy
+        	if (enemy >= *player1 && enemy >= *player2) {
+            	// enemy win
+            	cout << "Enemy wins!" << endl;
+        	}
+        	else {
+            	// player2 win
+            	cout << "\n" << player2->getName() << " wins!" << endl;
+       	 	}
+    	}
+    	else {
+        	// player2 is under 21, compare with enemy
+        	if (enemyUnder21) {
+            	// player2 win
+            	cout << "\n" << player2->getName() << " wins!" << endl;
+       	 	}
+        	else {
+            	// enemy win
+            	cout << "Enemy wins!" << endl;
+        	}
+    	}
+	}
+	// Similar logic for the case where player2 is over 21 and player1 is under 21
+	else if (*player2 > *player1 && *player2 > enemy && !player2Under21) {
+    	// player2 > player1 > enemy, but player2 is over 21
+    	// Add similar logic as above
+	}
+	else if (*player1 == *player2) {
+    	// players are tied
+    	if (player1->calculateHandValue() > 21 && player2->calculateHandValue() > 21) {
+        	// both players are over 21, compare with enemy
+        	if (enemy.calculateHandValue() > 21) {
+            	// all lose
+            	cout << "All lose!" << endl;
+        	}
+        	else {
+            	// enemy win
+            	cout << "Enemy wins!" << endl;
+        	}
+    	}
+    	else if (player1Under21 && player2Under21) {
+        	// both players are under 21, compare with enemy
+        	if (!enemyUnder21) {
+        	    // player1 and player2 win, enemy lose
+            	cout << "\n" << player1->getName() << " and " << player2->getName() << " win!" << endl;
+       	 	}
+        	else {
+            	// compare with enemy
+            	if (enemy >= *player1 && enemy >= *player2) {
+                	// enemy win
+                	cout << "Enemy wins!" << endl;
+            	}
+            	else {
+                	// player1 and player2 win, enemy lose
+                	cout << "\n" << player1->getName() << " and " << player2->getName() << " win!" << endl;
+            	}
+        	}
+    	}
+	}
+	
     return 0;
 }
