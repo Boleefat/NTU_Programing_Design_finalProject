@@ -103,6 +103,8 @@ public:
     void randomlyAddOneCard(CardDeck &deck);
 
     void addSpecificCard(Card *card);
+    
+    Record*& getRecord();
 };
 
 
@@ -187,7 +189,7 @@ public:
     Card *drawOneCard();
 
     // 根據 suit 和 rank 尋找特定的 Card 並返回指標，如果 isInDeck 為 false 則輸出訊息
-    Card *specificCard(const string &suit, const string &rank);
+    Card *specificCard(const string &suit, const string &rank, bool globalSearch);
 
     // 檢查卡組是否為空
     bool isEmpty() const;
@@ -212,7 +214,6 @@ public:
     string getName () const;
     virtual void useItem(Player*& target) = 0;
     void foldOneCard(Player*& target);
-    int chooseHandCard(Player*& target);
 };
 
 
@@ -301,7 +302,7 @@ public:
 
     //判斷player的type，呼叫該type的抽卡行動
     void playerDraw(Player *player, int &temp);
-
+    
     //Seeker抽卡
     void seekerDraw(Seeker *seeker, int &temp);
     
@@ -313,6 +314,12 @@ public:
     
     // 回傳player的pointer
     Player *getPlayerAtIndex(int index);
+    
+    // 判斷勝負
+    void result(bool whoWins[]);
+    
+    // 道具回合
+    void itemRound(bool whoWins[]);
 
     // destructor
     ~Game();
@@ -328,12 +335,12 @@ class Record
 private:
     string playerName;  // 玩家名稱
     string filePath;    // 檔案路徑
-    int maxCards;       // 單局最高手牌數
-    int maxPoints;      // 單局最高點數
-    int maxWinStreak;   // 最高連勝局數
+    int maxCards;       // 最高手牌數
+    int maxPoints;      // 最高點數
+    int currentWins;    // 連勝局數
+    int totalWins;      // 總勝場
 public:
     Record(string playerName);  // 建構函式（輸入玩家名稱）
-    void updateRecord(int cardCnt, int pointCnt, int winStreak);  // 更新玩家檔案
+    void updateRecord(bool winsToday, Player*& player);  // 更新玩家檔案
     void print() const;  // 列印玩家檔案
 };
-
