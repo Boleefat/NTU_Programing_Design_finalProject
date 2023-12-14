@@ -259,66 +259,83 @@ void Game::playerDraw(Player *player, int &temp)
 void Game::seekerDraw(Seeker *seeker, int &temp)
 {
 	cout << seeker->getName() << "'s turn: \n";
-	char move;
-    while (true)
-    {
-        cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
-        cin >> move;
-
-        if (move == 'Y')
-        {
-            seeker->randomlyAddOneCard(gameDeck);
-            temp = 0;
-			break; // 輸入正確，跳出迴圈
-        }
-        else if (move == 'N')
-        {
-            cout << "Do nothing\n";
-            temp = 1;
-			break;
-		}
-        else
-        {
-            temp = 0;
-			cout << "Invalid move. Please enter Y, N." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-         }
-    }
 	seeker->showHand();
-	cout << endl;
+	if (seeker->calculateHandValue() > 21)
+    	{
+       		cout << "You busted and you cannot draw anymore.\n";
+	}
+	else
+	{
+		char move;
+		while (true)
+        	{
+           		cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+           		cin >> move;
+            	
+			if (move == 'Y')
+            		{
+            			seeker->randomlyAddOneCard(gameDeck);
+               			temp = 0;
+				break; // 輸入正確，跳出迴圈
+           		}
+           		else if (move == 'N')
+           		{
+           			cout << "Do nothing\n";
+           			temp = 1;
+				break;
+			}
+           		else
+           		{
+               			temp = 0;
+				cout << "Invalid move. Please enter Y, N." << endl;
+               			cin.clear();
+               			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+           		}
+        	}
+	}
+        
+	seeker->showHand();
+	cout << endl;	
 }
     
 //targetor draw card
 void Game::targetorDraw(Targetor *targetor, int &temp)
 {
+	targetor->showHand();
 	cout << targetor->getName() << "'s turn: \n";
-	char move;
-    while (true)
-    {
-        cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
-        cin >> move;
+	if (targetor->calculateHandValue() > 21)
+    	{
+       		cout << "You busted and you cannot draw anymore.\n";
+	}
+	else
+	{
+		char move;
+		while (true)
+        	{	
+            		cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+           		cin >> move;
 
-        if (move == 'Y')
-        {
-            targetor->randomlyAddOneCard(gameDeck);
-            temp = 0;
-			break; // 輸入正確，跳出迴圈
-        }
-        else if (move == 'N')
-        {
-            cout << "Do nothing\n";
-            temp = 1;
-            break;
-		}
-        else
-        {
-            temp = 0;
-            cout << "Invalid move. Please enter Y, N." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-    }
+           		if (move == 'Y')
+           		{
+           			targetor->randomlyAddOneCard(gameDeck);
+               			temp = 0;
+				break; // 輸入正確，跳出迴圈
+            		}	
+            		else if (move == 'N')
+           		{
+           			cout << "Do nothing\n";
+            			temp = 1;
+            			break;
+			}
+            		else
+			{
+            			temp = 0;
+                		cout << "Invalid move. Please enter Y, N." << endl;
+                		cin.clear();
+                		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            		}		
+        	}
+	}
 	targetor->showHand();
 	cout << endl;
 }
