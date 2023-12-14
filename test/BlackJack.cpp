@@ -263,6 +263,7 @@ void Game::seekerDraw(Seeker *seeker, int &temp)
 	if (seeker->calculateHandValue() > 21)
     	{
        		cout << "You busted and you cannot draw anymore.\n";
+		temp = 1;
 	}
 	else
 	{
@@ -306,6 +307,7 @@ void Game::targetorDraw(Targetor *targetor, int &temp)
 	if (targetor->calculateHandValue() > 21)
     	{
        		cout << "You busted and you cannot draw anymore.\n";
+		temp = 1;
 	}
 	else
 	{
