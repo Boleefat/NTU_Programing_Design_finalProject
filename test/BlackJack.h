@@ -280,14 +280,23 @@ public:
     // 判斷player的type，呼叫該type的move
     void playerMove(Player *player);
     
-    // Enemy move
-    void enemyMove(Enemy *enemy);
-    
     // Seeker的move
     void seekerMove(Seeker *seeker);
     
     // Targetor的move
     void targetorMove(Targetor *Targetor);
+
+    //判斷player的type，呼叫該type的抽卡行動
+    void playerDraw(Player *player, int &temp)
+
+    //Seeker抽卡
+    void seekerDraw(Seeker *seeker, int &temp)
+    
+    // Targetor抽卡
+    void targetorDraw(Targetor *targetor, int &temp)
+
+    //enemy 抽卡
+ 	void enemyDraw(Enemy *enemy)
     
     // 回傳player的pointer
     Player *getPlayerAtIndex(int index);
