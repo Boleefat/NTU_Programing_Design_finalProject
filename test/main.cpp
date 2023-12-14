@@ -66,7 +66,16 @@ int main()
     	// player2 win
     	cout << "\n" << player2->getName() << " wins!" << endl;
 	}
-	else if (*player1 > *player2 && *player1 > enemy && !player1Under21) {
+	else if (*player2 > *player1 && enemy.calculateHandValue() > 21 && player2Under21)
+	{
+		cout << "\n" << player2->getName() << " wins!" << endl;
+	}
+	else if (*player1 > *player2 && enemy.calculateHandValue() > 21 && player2Under21)
+	{
+		cout << "\n" << player1->getName() << " wins!" << endl;
+	}
+	else if (*player1 > *player2 && *player1 > enemy && !player1Under21) 
+	{
     	// player1 > player2 > enemy, but player1 is over 21
     	if (!player2Under21) {
         	// player2 is also over 21, compare with enemy
@@ -92,9 +101,31 @@ int main()
     	}
 	}
 	// Similar logic for the case where player2 is over 21 and player1 is under 21
-	else if (*player2 > *player1 && *player2 > enemy && !player2Under21) {
+	else if (*player2 > *player1 && *player2 > enemy && !player2Under21) 
+	{
     	// player2 > player1 > enemy, but player2 is over 21
-    	// Add similar logic as above
+    	if (!player1Under21) {
+        	// player2 is also over 21, compare with enemy
+        	if (enemy >= *player1 && enemy >= *player2) {
+            	// enemy win
+            	cout << "Enemy wins!" << endl;
+        	}
+        	else {
+            	// player2 win
+            	cout << "\n" << player2->getName() << " wins!" << endl;
+       	 	}
+    	}
+    	else {
+        	// player2 is under 21, compare with enemy
+        	if (enemyUnder21) {
+            	// player2 win
+            	cout << "\n" << player1->getName() << " wins!" << endl;
+       	 	}
+        	else {
+            	// enemy win
+            	cout << "Enemy wins!" << endl;
+        	}
+    	}
 	}
 	else if (*player1 == *player2) {
     	// players are tied
