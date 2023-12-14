@@ -336,3 +336,4 @@ public:
     void updateRecord(int cardCnt, int pointCnt, int winStreak);  // 更新玩家檔案
     void print() const;  // 列印玩家檔案
 };
+
