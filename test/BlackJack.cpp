@@ -74,6 +74,7 @@ void Game::addPlayers()
     }
     
     this->printIntro("characters");
+    this->printStage("Setting up Players");
     
     // 動態建立玩家，加入遊戲
     for (int i = 0; i < numPlayers; ++i)
@@ -136,7 +137,6 @@ void Game::printIntro(const string file) const
             intro.getline(line,100);
             cout << line << endl;
         }
-        printLong();
     }
     intro.close();
     
@@ -202,7 +202,6 @@ void Game::showPlayersNameAndChr() const
         }
         cout << endl;
     }
-    this->enterYtoContinue();
 }
 
 
@@ -372,7 +371,7 @@ void Game::enemyDraw(Enemy *enemy)
     //     檢查敵人手牌總點數
     int totalValue = enemy->calculateHandValue();
 
-    cout << "Enemy's turn: " << enemy->getName() << ", Character: Enemy" << endl;
+    cout << enemy->getName() << "'s turn, Character: Enemy" << endl;
     enterYtoContinue();
 
     // 如果手牌總點數小於 17，則繼續抽牌
@@ -397,23 +396,23 @@ void Game::enemyDraw(Enemy *enemy)
 // Seeker的move
 void Game::seekerMove(Seeker *seeker)
 {
-    cout << "Player's turn: " << seeker->getName() << ", Character: Seeker" << endl;
+    cout << "Next Player: " << seeker->getName() << ", Character: Seeker" << endl;
     enterYtoContinue();
     seeker->showHand();
 
     char move;
     while (true)
     {
-        cout << "Do you want to use your skill? (S: Use skill, N: Do nothing): ";
+        cout << "Do you want to use your skill?\n(1: SeekPlayer, 2: SeekDeck, N: Do Nothing): ";
         cin >> move;
 
-        if (move == 'S' || move == 'N')
+        if (move == '1' || move == '2'|| move == 'N')
         {
             break; // 輸入正確，跳出迴圈
         }
         else
         {
-            cout << "Invalid move. Please enter S, N." << endl;
+            cout << "Invalid move. Please enter 1 or 2 or N." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
@@ -421,37 +420,18 @@ void Game::seekerMove(Seeker *seeker)
 
     switch (move)
     {
-    case 'S':
-        int skillChoice;
-        while (true)
         {
-            cout << "Choose a skill (1: Skill One, 2: Skill Two): ";
-            cin >> skillChoice;
-
-            if (skillChoice == 1 || skillChoice == 2)
-            {
-                break; // 輸入正確，跳出迴圈
-            }
-            else
-            {
-                cout << "Invalid skill choice. Please enter 1 or 2." << endl;
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            }
-        }
-        // 使用技能
-        switch (skillChoice)
-        {
-        case 1:
-        {
+        case '1':
+            
             // 展示玩家資訊
+            cout << "------------------------------" << endl;
             showPlayersNameAndChr();
-
+            
             // 讓使用者輸入要尋找的玩家名稱
             cout << "Enter the name of the player to seek: ";
             string playerNameToSeek;
             cin >> playerNameToSeek;
-
+            
             // 在 players 中尋找玩家指標
             Player *targetPlayer = nullptr;
             for (Player *p : players)
@@ -462,7 +442,7 @@ void Game::seekerMove(Seeker *seeker)
                     break;
                 }
             }
-
+            
             // 如果找到玩家，執行技能
             if (targetPlayer != nullptr)
             {
@@ -474,11 +454,11 @@ void Game::seekerMove(Seeker *seeker)
             }
             break; // 這裡加上 break
         }
-        case 2:
+        case '2':
+            
             seeker->seekDeck(gameDeck);
             break;
-        }
-        break;
+
     case 'N':
         // 不做任何事
         //cout << "Doing nothing..." << endl;
@@ -775,7 +755,7 @@ void Seeker::seekAnotherPlayer(Player *targetPlayer)
     {
         // Set skillOne to false after using the special ability
         skillCounter.isSkillOneAvailable = false;
-        cout << getName() << " seeks the hand of " << targetPlayer->getName() << ":" << endl;
+        cout << getName() << " seeks the hand of " << targetPlayer->getName() << "..." << endl;
         targetPlayer->showHand();
         cout << endl;
     }
@@ -794,7 +774,7 @@ void Seeker::seekDeck(CardDeck &deck)
     {
         // Set skillOne to false after using the special ability
         skillCounter.isSkillTwoAvailable = false;
-        cout << this->name << " seeks the Deck " << endl;
+        cout << this->name << " seeks the Deck..." << endl;
         deck.displayDeck();
     }
     else
@@ -1031,6 +1011,7 @@ int CardDeck::getDeckSize() const
 // 顯示卡組內容
 void CardDeck::displayDeck() const
 {
+    cout << "------------------------------" << endl;
     for (const auto &card : cards)
     {
         if (card.isInDeck)
@@ -1042,6 +1023,7 @@ void CardDeck::displayDeck() const
             std::cout << "Card: " << card.suit << "-" << card.rank << ", Value: " << card.value << " (out)" << std::endl;
         }
     }
+    cout << "------------------------------" << endl << endl;
 }
 
 
