@@ -84,6 +84,7 @@ public:
     string getName() const;
 
     vector<Card> &getHand();
+    vector<Card> getHand() const;
 
     void showHand() const;
 
@@ -94,11 +95,11 @@ public:
     bool operator>(const Player &other) const;
     
     bool operator>=(const Player& other) const;
-	
-	bool operator<=(const Player& other) const;  
-
-    bool operator==(const Player& other) const;
     
+    bool operator<=(const Player& other) const;
+    
+    bool operator==(const Player& other) const;
+
     void randomlyAddOneCard(CardDeck &deck);
 
     void addSpecificCard(Card *card);
@@ -272,8 +273,14 @@ public:
     void enterYtoContinue() const;
     
     // 印出介紹
-    void intro(const string) const;
-
+    void printIntro(const string intro) const;
+    
+    // 印出分隔線
+    void printLong() const;
+    
+    // 印出下一階段
+    void printStage(string stage) const;
+    
     // 進行初始發牌，每位玩家隨機抽兩張卡
     void initialDeal();
 
@@ -302,7 +309,7 @@ public:
     void targetorDraw(Targetor *targetor, int &temp);
 
     //enemy 抽卡
- 	void enemyDraw(Enemy *enemy)
+    void enemyDraw(Enemy *enemy);
     
     // 回傳player的pointer
     Player *getPlayerAtIndex(int index);
