@@ -92,7 +92,13 @@ public:
     bool operator<(const Player &other) const;
 
     bool operator>(const Player &other) const;
+    
+    bool operator>=(const Player& other) const;
+	
+	bool operator<=(const Player& other) const;  
 
+    bool operator==(const Player& other) const;
+    
     void randomlyAddOneCard(CardDeck &deck);
 
     void addSpecificCard(Card *card);
