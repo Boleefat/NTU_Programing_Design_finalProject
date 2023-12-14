@@ -46,7 +46,7 @@ int main()
 			}
 		}
 		
-	}while(temp1 != 1 && temp2 != 1);
+	}while((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
     
     cout << "\nGame End\n";
     
