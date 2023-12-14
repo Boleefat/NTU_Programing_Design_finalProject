@@ -221,28 +221,140 @@ void Game::playerMove(Player *player)
     {
         targetorMove(targetor);
     }
-    else if (enemy != nullptr)
-    {
-        enemyMove(enemy);
-    }
     else
     {
-        cout << "Unknown Character" << endl;
+        //cout << "Unknown Character" << endl;
     }
 }
 
-
-// Enemy move
-void Game::enemyMove(Enemy *enemy)
+// 判斷character職業，並抽牌
+void Game::playerDraw(Player *player, int &temp)
 {
-    enemy->randomlyAddOneCard(gameDeck);
+    if (player == nullptr)
+    {
+        cout << "Invalid player." << endl;
+        return;
+    }
+
+    // Check the player's type using dynamic_cast
+    Seeker *seeker = dynamic_cast<Seeker *>(player);
+    Targetor *targetor = dynamic_cast<Targetor *>(player);    
+    Enemy *enemy = dynamic_cast<Enemy *>(player);
+
+    if (seeker != nullptr)
+    {
+        seekerDraw(seeker, temp);
+    }
+    else if (targetor != nullptr)
+    {
+        targetorDraw(targetor, temp);
+    }
+    else
+    {
+        //cout << "Unknown Character" << endl;
+    }
+}
+    
+//seeker draw card
+void Game::seekerDraw(Seeker *seeker, int &temp)
+{
+	cout << seeker->getName() << "'s turn: \n";
+	char move;
+    while (true)
+    {
+        cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+        cin >> move;
+
+        if (move == 'Y')
+        {
+            seeker->randomlyAddOneCard(gameDeck);
+            temp = 0;
+			break; // 輸入正確，跳出迴圈
+        }
+        else if (move == 'N')
+        {
+            cout << "Do nothing\n";
+            temp = 1;
+			break;
+		}
+        else
+        {
+            temp = 0;
+			cout << "Invalid move. Please enter Y, N." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+         }
+    }
+	seeker->showHand();
+	cout << endl;
+}
+    
+//targetor draw card
+void Game::targetorDraw(Targetor *targetor, int &temp)
+{
+	cout << targetor->getName() << "'s turn: \n";
+	char move;
+    while (true)
+    {
+        cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+        cin >> move;
+
+        if (move == 'Y')
+        {
+            targetor->randomlyAddOneCard(gameDeck);
+            temp = 0;
+			break; // 輸入正確，跳出迴圈
+        }
+        else if (move == 'N')
+        {
+            cout << "Do nothing\n";
+            temp = 1;
+            break;
+		}
+        else
+        {
+            temp = 0;
+            cout << "Invalid move. Please enter Y, N." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+	targetor->showHand();
+	cout << endl;
+}
+	
+//enemy Draw a card
+void Game::enemyDraw(Enemy *enemy)
+{
+    const int threshold = 17;
+
+    // 	檢查敵人手牌總點數
+    int totalValue = enemy->calculateHandValue();
+
+    cout << "Enemy's turn: " << enemy->getName() << ", Character: Enemy" << endl;
+
+    // 如果手牌總點數小於 17，則繼續抽牌
+    if (totalValue < threshold)
+    {
+        cout << "Drawing a card for the enemy..." << endl;
+        enemy->randomlyAddOneCard(gameDeck);	
+
+        // 更新手牌總點數
+        totalValue = enemy->calculateHandValue();
+    }
+	else
+	{
+		cout << "Enemy stops drawing cards." << endl;
+	}
+		
+    enemy->showHand();
+    cout << endl;
 }
 
 
 // Seeker的move
 void Game::seekerMove(Seeker *seeker)
 {
-    cout << endl;
     cout << "Player's turn: " << seeker->getName() << ", Character: Seeker" << endl;
     cout << "Current hand: " << endl;
     seeker->showHand();
@@ -250,17 +362,16 @@ void Game::seekerMove(Seeker *seeker)
     char move;
     while (true)
     {
-        cout << "Enter your move (A: Add a card, S: Use skill, N: Do nothing): ";
+        cout << "Use your skill or not (S: Use skill, N: Do nothing): ";
         cin >> move;
 
-        if (move == 'A' || move == 'S' || move == 'N')
+        if (move == 'S' || move == 'N')
         {
-            cout << "************************************************************" << endl;
             break; // 輸入正確，跳出迴圈
         }
         else
         {
-            cout << "Invalid move. Please enter A, S, or N." << endl;
+            cout << "Invalid move. Please enter S, N." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
@@ -268,11 +379,7 @@ void Game::seekerMove(Seeker *seeker)
 
     switch (move)
     {
-    case 'A':
-        seeker->randomlyAddOneCard(gameDeck);
-        break;
-            
-    case 'S':
+	case 'S':
         int skillChoice;
         while (true)
         {
@@ -339,6 +446,16 @@ void Game::seekerMove(Seeker *seeker)
     seeker->showHand();
     cout << "\n";
 }
+
+
+
+
+
+
+
+
+
+
 
 
 // Targetor的move
