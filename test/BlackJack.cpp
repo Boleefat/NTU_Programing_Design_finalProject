@@ -73,7 +73,7 @@ void Game::addPlayers()
         }
     }
     
-    this->intro("characters");
+    this->printIntro("characters");
     
     // 動態建立玩家，加入遊戲
     for (int i = 0; i < numPlayers; ++i)
@@ -122,29 +122,48 @@ void Game::addPlayers()
 
 
 // 印出角色介紹
-void Game::intro(const string file) const
+void Game::printIntro(const string file) const
 {
     ifstream intro("./intros/"+ file +".txt");
     if(intro)
     {
-        cout << "Here's the introduction of the "+ file +":" << endl
-        << "------------------------------";
+        /*cout << "Here's the introduction of the "+ file +":" << endl
+        << "------------------------------";*/
+        printLong();
         char line[100];
         while(!intro.eof())
         {
             intro.getline(line,100);
-            cout << endl << line;
+            cout << line << endl;
         }
+        printLong();
     }
     intro.close();
+    
+}
+
+void Game::printLong() const
+{
     cout << "************************************************************" << endl;
+}
+
+void Game::printStage(string stage) const
+{
+    printLong();
+    for(int i=0; i < (60-stage.size())/2; i++)
+    {
+        cout << " ";
+    }
+    cout << stage << endl;
+    printLong();
 }
 
 
 // 進行初始發牌，每位玩家隨機抽兩張卡
 void Game::initialDeal()
 {
-    cout << "Game Begins!" << endl;
+    printStage("Game Begins");
+    
     for (Player *player : players)
     {
         // 每位玩家抽兩張卡
@@ -238,7 +257,7 @@ void Game::playerDraw(Player *player, int &temp)
 
     // Check the player's type using dynamic_cast
     Seeker *seeker = dynamic_cast<Seeker *>(player);
-    Targetor *targetor = dynamic_cast<Targetor *>(player);    
+    Targetor *targetor = dynamic_cast<Targetor *>(player);
     Enemy *enemy = dynamic_cast<Enemy *>(player);
 
     if (seeker != nullptr)
@@ -258,116 +277,120 @@ void Game::playerDraw(Player *player, int &temp)
 //seeker draw card
 void Game::seekerDraw(Seeker *seeker, int &temp)
 {
-	cout << seeker->getName() << "'s turn: \n";
-	seeker->showHand();
-	if (seeker->calculateHandValue() > 21)
-    	{
-       		cout << "You busted and you cannot draw anymore.\n";
-		temp = 1;
-	}
-	else
-	{
-		char move;
-		while (true)
-        	{
-           		cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
-           		cin >> move;
-            	
-			if (move == 'Y')
-            		{
-            			seeker->randomlyAddOneCard(gameDeck);
-               			temp = 0;
-				break; // 輸入正確，跳出迴圈
-           		}
-           		else if (move == 'N')
-           		{
-           			cout << "Do nothing\n";
-           			temp = 1;
-				break;
-			}
-           		else
-           		{
-               			temp = 0;
-				cout << "Invalid move. Please enter Y, N." << endl;
-               			cin.clear();
-               			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-           		}
-        	}
-	}
+    //cout << seeker->getName() << "'s turn: \n";
+    //seeker->showHand();
+    if (seeker->calculateHandValue() >= 21)
+        {
+               cout << "- You cannot draw anymore...\n";
+        temp = 1;
+    }
+    else
+    {
+        char move;
+        while (true)
+        {
+                   cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+                   cin >> move;
+                
+                   if (move == 'Y')
+                   {
+                       seeker->randomlyAddOneCard(gameDeck);
+                       temp = 0;
+                       if(seeker->calculateHandValue()>21)
+                           temp = 1;
+                       seeker->showHand();
+                       break; // 輸入正確，跳出迴圈
+                   }
+                   else if (move == 'N')
+                   {
+                       //cout << "Do nothing\n";
+                        temp = 1;
+                       break;
+                   }
+                   else
+                   {
+                           temp = 0;
+                cout << "Invalid move. Please enter Y, N." << endl;
+                           cin.clear();
+                           cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                   }
+            }
+    }
         
-	seeker->showHand();
-	cout << endl;	
 }
     
 //targetor draw card
 void Game::targetorDraw(Targetor *targetor, int &temp)
 {
-	targetor->showHand();
-	cout << targetor->getName() << "'s turn: \n";
-	if (targetor->calculateHandValue() > 21)
-    	{
-       		cout << "You busted and you cannot draw anymore.\n";
-		temp = 1;
-	}
-	else
-	{
-		char move;
-		while (true)
-        	{	
-            		cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
-           		cin >> move;
+    //targetor->showHand();
+    //cout << targetor->getName() << "'s turn: \n";
+    if (targetor->calculateHandValue() > 21)
+        {
+               cout << " - You busted and you cannot draw anymore.\n";
+        temp = 1;
+    }
+    else
+    {
+        char move;
+        while (true)
+            {
+                    cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+                   cin >> move;
 
-           		if (move == 'Y')
-           		{
-           			targetor->randomlyAddOneCard(gameDeck);
-               			temp = 0;
-				break; // 輸入正確，跳出迴圈
-            		}	
-            		else if (move == 'N')
-           		{
-           			cout << "Do nothing\n";
-            			temp = 1;
-            			break;
-			}
-            		else
-			{
-            			temp = 0;
-                		cout << "Invalid move. Please enter Y, N." << endl;
-                		cin.clear();
-                		cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            		}		
-        	}
-	}
-	targetor->showHand();
-	cout << endl;
+                   if (move == 'Y')
+                   {
+                       targetor->randomlyAddOneCard(gameDeck);
+                           temp = 0;
+                       if(targetor->calculateHandValue()>21)
+                           temp = 1;
+                       targetor->showHand();
+                break; // 輸入正確，跳出迴圈
+                    }
+                    else if (move == 'N')
+                   {
+                       //cout << "Do nothing\n";
+                        temp = 1;
+                        break;
+            }
+                    else
+            {
+                        temp = 0;
+                        cout << "Invalid move. Please enter Y, N." << endl;
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
+            }
+    }
+    
 }
-	
+    
 //enemy Draw a card
 void Game::enemyDraw(Enemy *enemy)
 {
     const int threshold = 17;
 
-    // 	檢查敵人手牌總點數
+    //     檢查敵人手牌總點數
     int totalValue = enemy->calculateHandValue();
 
     cout << "Enemy's turn: " << enemy->getName() << ", Character: Enemy" << endl;
+    enterYtoContinue();
 
     // 如果手牌總點數小於 17，則繼續抽牌
     if (totalValue < threshold)
     {
-        cout << "Drawing a card for the enemy..." << endl;
-        enemy->randomlyAddOneCard(gameDeck);	
+        
+        enemy->randomlyAddOneCard(gameDeck);
 
         // 更新手牌總點數
         totalValue = enemy->calculateHandValue();
     }
-	else
-	{
-		cout << "Enemy stops drawing cards." << endl;
-	}
-		
+    else
+    {
+        cout << "Enemy stops drawing cards." << endl;
+    }
+    
     enemy->showHand();
-    cout << endl;
+    
 }
 
 
@@ -375,13 +398,13 @@ void Game::enemyDraw(Enemy *enemy)
 void Game::seekerMove(Seeker *seeker)
 {
     cout << "Player's turn: " << seeker->getName() << ", Character: Seeker" << endl;
-    cout << "Current hand: " << endl;
+    enterYtoContinue();
     seeker->showHand();
 
     char move;
     while (true)
     {
-        cout << "Use your skill or not (S: Use skill, N: Do nothing): ";
+        cout << "Do you want to use your skill? (S: Use skill, N: Do nothing): ";
         cin >> move;
 
         if (move == 'S' || move == 'N')
@@ -398,7 +421,7 @@ void Game::seekerMove(Seeker *seeker)
 
     switch (move)
     {
-	case 'S':
+    case 'S':
         int skillChoice;
         while (true)
         {
@@ -458,12 +481,12 @@ void Game::seekerMove(Seeker *seeker)
         break;
     case 'N':
         // 不做任何事
-        cout << "Doing nothing..." << endl;
+        //cout << "Doing nothing..." << endl;
         break;
     }
 
-    seeker->showHand();
-    cout << "\n";
+    //seeker->showHand();
+    //cout << "\n";
 }
 
 
@@ -502,14 +525,13 @@ Player *Game::getPlayerAtIndex(int index)
 // 讓玩家輸入Y以繼續遊戲
 void Game::enterYtoContinue() const
 {
-    cout << "----------------------------------------" << endl;
     char enter = 'N';
     while(enter != 'Y')
     {
-        cout << "If you're ready, enter Y to continue: ";
+        cout << "Enter Y to continue: ";
         cin >> enter;
     }
-    cout << "----------------------------------------" << endl;
+
 }
 
 
@@ -562,10 +584,10 @@ void Game::addItem(Player*& player)
 // destructor
 Game::~Game()
 {
-    for (Player *player : players)
+    /*for (Player *player : players)
     {
         delete player;
-    }
+    }*/
 }
 
 
@@ -606,34 +628,39 @@ bool Player::operator>(const Player &other) const
     return calculateHandValue() > other.calculateHandValue();
 }
 
-bool operator>=(const Player& other) const 
+
+// 比較運算子 >=
+bool Player::operator>=(const Player& other) const
 {
-   	if (calculateHandValue() == other.calculateHandValue()) 
-	{
-       // 如果手牌值相同，比較牌數
-       	return hand.size() >= other.hand.size();
+    if (calculateHandValue() == other.calculateHandValue())
+    {
+    // 如果手牌值相同，比較牌數
+        return hand.size() >= other.hand.size();
     }
     // 手牌值不同，直接比較手牌值
     return calculateHandValue() >= other.calculateHandValue();
 }
 
-bool operator<=(const Player& other) const 
+
+// 比較運算子 <=
+bool Player::operator<=(const Player& other) const
 {
-    if (calculateHandValue() == other.calculateHandValue()) 
-	{
-       	// 如果手牌值相同，比較牌數
+    if (calculateHandValue() == other.calculateHandValue())
+    {
+        // 如果手牌值相同，比較牌數
         return hand.size() <= other.hand.size();
     }
     // 手牌值不同，直接比較手牌值
     return calculateHandValue() <= other.calculateHandValue();
 }
 
-bool operator==(const Player& other) const 
+
+// 比較運算子 ==
+bool Player::operator==(const Player& other) const
 {
     // 同時比較手牌值和牌數
     return (calculateHandValue() == other.calculateHandValue()) && (hand.size() == other.hand.size());
 }
-
 
 
 // 計算手牌總值
@@ -668,15 +695,19 @@ int Player::calculateHandValue() const
 void Player::showHand() const
 {
     cout << "------------------------------" << endl
-    << name << "'s hands:" << endl;
+    << name << "'s hands: " << endl;
     
     for (const auto &card : hand)
     {
         cout << "- " << card.suit << "-" << card.rank << ", value : " << card.value << endl;
     }
     
-    cout << "Total card value: " << calculateHandValue() << endl
-    << "------------------------------" << endl;
+    cout << "Total card value: " << calculateHandValue();
+    if(calculateHandValue()>21)
+        cout << " (Busted!)";
+    
+    cout << endl;
+    
 }
 
 
@@ -687,7 +718,7 @@ void Player::randomlyAddOneCard(CardDeck &deck)
     if (drawnCard != nullptr)
     {
         hand.push_back(*drawnCard); // 添加該牌到玩家手牌中 ////注意這邊是shallow copy
-        cout << "- "+ name +" get one card: " << drawnCard->suit << "-" << drawnCard->rank << ", value: " << drawnCard->value << endl;
+        cout << "- "+ name +" got ONE card: " << drawnCard->suit << "-" << drawnCard->rank << ", value: " << drawnCard->value << endl;
     }
     else
     {
@@ -719,7 +750,10 @@ vector<Card> &Player::getHand()
     return hand;
 }
 
-
+vector<Card> Player::getHand() const
+{
+    return hand;
+}
 
 
 
@@ -1139,7 +1173,7 @@ Record::Record(string playerName)
         newFile.close();
     }
     searchFile.close();
-    cout << "************************************************************" << endl;
+    cout << "------------------------------------------------------------" << endl;
 }
 
 
