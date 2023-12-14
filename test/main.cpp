@@ -17,6 +17,7 @@ int main()
     game.printStage("Ｗelcome to Black Jack!");
     game.addPlayers();            // 加入玩家
     game.showPlayersNameAndChr(); // 確認玩家資訊
+    game.enterYtoContinue();
     game.initialDeal();           // 進行初始發牌
 
     Enemy enemy("Banker");
