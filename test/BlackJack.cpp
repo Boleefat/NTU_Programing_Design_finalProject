@@ -606,6 +606,35 @@ bool Player::operator>(const Player &other) const
     return calculateHandValue() > other.calculateHandValue();
 }
 
+bool operator>=(const Player& other) const 
+{
+   	if (calculateHandValue() == other.calculateHandValue()) 
+	{
+       // 如果手牌值相同，比較牌數
+       	return hand.size() >= other.hand.size();
+    }
+    // 手牌值不同，直接比較手牌值
+    return calculateHandValue() >= other.calculateHandValue();
+}
+
+bool operator<=(const Player& other) const 
+{
+    if (calculateHandValue() == other.calculateHandValue()) 
+	{
+       	// 如果手牌值相同，比較牌數
+        return hand.size() <= other.hand.size();
+    }
+    // 手牌值不同，直接比較手牌值
+    return calculateHandValue() <= other.calculateHandValue();
+}
+
+bool operator==(const Player& other) const 
+{
+    // 同時比較手牌值和牌數
+    return (calculateHandValue() == other.calculateHandValue()) && (hand.size() == other.hand.size());
+}
+
+
 
 // 計算手牌總值
 int Player::calculateHandValue() const
