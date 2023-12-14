@@ -21,7 +21,7 @@ int main()
     game.initialDeal();           // 進行初始發牌
 
     Enemy enemy("Banker");
-    game.addPlayer(&enemy);
+    game.addPlayer(&enemy);  // 加入敵人（莊家）
 
     
     int temp1 = 0;
@@ -58,115 +58,12 @@ int main()
     }while((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
     
     
-    Player* player1 = game.getPlayerAtIndex(0);
-    Player* player2 = game.getPlayerAtIndex(1);
+    bool whoWins[2] = {0,0};
+    game.result(whoWins);  // 判斷勝負
     
-    bool player1Under21 = game.getPlayerAtIndex(0)->calculateHandValue() <= 21;
-    bool player2Under21 = game.getPlayerAtIndex(1)->calculateHandValue() <= 21;
-    bool enemyUnder21 = enemy.calculateHandValue() <= 21;
-
-
-    if (*player1 > *player2 && *player1 > enemy && player1Under21) {
-        // player1 win
-        game.printStage(player1->getName()+" Won!");
-    }
-    else if (*player2 > *player1 && *player2 > enemy && player2Under21) {
-        // player2 win
-        game.printStage(player2->getName()+" Won!");
-    }
-    else if (*player2 > *player1 && enemy.calculateHandValue() > 21 && player2Under21)
-    {
-        game.printStage(player2->getName()+" Won!");
-    }
-    else if (*player1 > *player2 && enemy.calculateHandValue() > 21 && player2Under21)
-    {
-        game.printStage(player1->getName()+" Won!");
-    }
-    else if (*player1 > *player2 && *player1 > enemy && !player1Under21)
-    {
-        // player1 > player2 > enemy, but player1 is over 21
-        if (!player2Under21) {
-            // player2 is also over 21, compare with enemy
-            if (enemy >= *player1 && enemy >= *player2) {
-                // enemy win
-                game.printStage(enemy.getName()+" Won!");
-            }
-            else {
-                // player2 win
-                game.printStage(player2->getName()+" Won!");
-                }
-        }
-        else {
-            // player2 is under 21, compare with enemy
-            if (enemyUnder21) {
-                // player2 win
-                game.printStage(player2->getName()+" Won!");
-                }
-            else {
-                // enemy win
-                game.printStage(enemy.getName()+" Won!");
-            }
-        }
-    }
-    // Similar logic for the case where player2 is over 21 and player1 is under 21
-    else if (*player2 > *player1 && *player2 > enemy && !player2Under21)
-    {
-        // player2 > player1 > enemy, but player2 is over 21
-        if (!player1Under21) {
-            // player2 is also over 21, compare with enemy
-            if (enemy >= *player1 && enemy >= *player2) {
-                // enemy win
-                game.printStage(enemy.getName()+" Won!");
-            }
-            else {
-                // player2 win
-                game.printStage(player2->getName()+" Won!");
-                }
-        }
-        else {
-            // player2 is under 21, compare with enemy
-            if (enemyUnder21) {
-                // player2 win
-                game.printStage(player1->getName()+" Won!");
-                }
-            else {
-                // enemy win
-                game.printStage(enemy.getName()+" Won!");
-            }
-        }
-    }
-    else if (*player1 == *player2) {
-        // players are tied
-        if (player1->calculateHandValue() > 21 && player2->calculateHandValue() > 21) {
-            // both players are over 21, compare with enemy
-            if (enemy.calculateHandValue() > 21) {
-                // all lose
-                game.printStage("No one won. Everyone LOST!");
-            }
-            else {
-                // enemy win
-                game.printStage(enemy.getName()+" Won!");
-            }
-        }
-        else if (player1Under21 && player2Under21) {
-            // both players are under 21, compare with enemy
-            if (!enemyUnder21) {
-                // player1 and player2 win, enemy lose
-                game.printStage(player1->getName()+" and "+player2->getName()+" both Won!");
-            }
-            else {
-                // compare with enemy
-                if (enemy >= *player1 && enemy >= *player2) {
-                    // enemy win
-                    game.printStage(enemy.getName()+" Won!");
-                }
-                else {
-                    // player1 and player2 win, enemy lose
-                    game.printStage(player1->getName()+" and "+player2->getName()+" both Won!");
-                }
-            }
-        }
-    }
+    game.itemRound(whoWins);  // Bonus 道具回合
+    
+    game.printStage("GAME ENDS");  
     
     return 0;
 }
