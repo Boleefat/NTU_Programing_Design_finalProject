@@ -15,6 +15,7 @@ int main()
     CardDeck deck;
     game.printStage("歡迎來到不公平的21點遊戲!");
     game.printGameRules();
+    game.printCharacterSkills(); // 在玩家選擇角色前顯示角色技能介紹
     game.addPlayers();            // 加入玩家
     game.showPlayersNameAndChr(); // 確認玩家資訊
     game.enterYtoContinue();
