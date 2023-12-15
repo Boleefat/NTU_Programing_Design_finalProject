@@ -125,7 +125,7 @@ void Player::showHand() const
     if (calculateHandValue() > 21)
         cout << " (Busted!)";
 
-    cout << endl;
+    cout << endl << endl;;
 }
 
 // 隨機添加一張牌到手牌
@@ -191,14 +191,14 @@ void Seeker::seekAnotherPlayer(Player *targetPlayer)
     {
         // Set skillOne to false after using the special ability
         skillCounter.isSkillOneAvailable = false;
-        cout << getName() << " seeks the hand of " << targetPlayer->getName() << "..." << endl;
+        cout << getName() << " seeks the hands of " << targetPlayer->getName() << "..." << endl;
         targetPlayer->showHand();
-        cout << endl;
+        
     }
     else
     {
         // Print a message if the skill is not available
-        cout << "You have used this skill." << endl;
+        cout << "- You have used this skill." << endl;
     }
 }
 
@@ -216,7 +216,7 @@ void Seeker::seekDeck(CardDeck &deck)
     else
     {
         // Print a message if the skill is not available
-        cout << "You have used this skill." << endl;
+        cout << "- You have used this skill." << endl;
     }
 }
 
@@ -274,10 +274,14 @@ void Seeker::playerMove(CardDeck &gameDeck, Game &game)
             if (targetPlayer != nullptr)
             {
                 seekAnotherPlayer(targetPlayer);
+                cout << "Your hands now:" << endl;
+                showHand();
             }
             else
             {
-                cout << "Player not found." << endl;
+                cout << "- Player not found." << endl
+                 << "Your hands now:" << endl;
+                showHand();
             }
             break; // 這裡加上 break
         }
@@ -368,17 +372,17 @@ void Targetor::takeSpecificCard(CardDeck &deck, const string &suit, const string
             hand.push_back(*specificCard);
 
             // 輸出訊息
-            cout << "Found and added card: " << specificCard->suit << "-" << specificCard->rank << ", value: " << specificCard->value << " to " << getName() << "'s hand." << endl;
+            cout << "- "+ getName() +" got ONE card: "<< specificCard->suit << "-" << specificCard->rank << ", value: " << specificCard->value << endl;
         }
         else
         {
             // 如果卡片為 nullptr，表示卡片在其他玩家手中
-            cout << "The card is in someone else's hand." << endl;
+            cout << "- The card is in someone else's hand." << endl;
         }
     }
     else
     {
-        cout << "You have used this skill." << endl;
+        cout << "- You have used this skill." << endl;
     }
 }
 
@@ -401,19 +405,20 @@ void Targetor::discardCard(Player *targetPlayer, int value)
             targetHand.erase(it);
 
             // 輸出訊息
-            cout << "Discarded card with value " << value << " from " << targetPlayer->getName() << "'s hand." << endl;
+            cout << "- Destroyed a card with value " << value << " on " << targetPlayer->getName() << "'s hand." << endl;
+            targetPlayer->showHand();
 
             this->skillCounter.isSkillTwoAvailable = false;
         }
         else
         {
             // 如果卡片不在手中，輸出相應訊息
-            cout << "Discard fail, you can use it again." << endl;
+            cout << "- Destroy failed, you can use it again." << endl;
         }
     }
     else
     {
-        cout << "You have used this skill." << endl;
+        cout << "- You have used this skill." << endl;
     }
 }
 
@@ -453,7 +458,7 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             while (true)
             {
                 // 詢問花色
-                std::cout << "Enter suit (S for Spades, H for Hearts, D for Diamonds, C for Clubs): ";
+                std::cout << "- Enter suit (S for Spades, H for Hearts, D for Diamonds, C for Clubs): ";
                 std::cin >> suit;
                 // 檢查 suit 是否為合法值
                 if (suit == 'H' || suit == 'D' || suit == 'C' || suit == 'S')
@@ -469,7 +474,7 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             while (true)
             {
                 // 詢問 rank
-                std::cout << "Enter rank AJQK or 2-10: ";
+                std::cout << "- Enter rank AJQK or 2-10: ";
                 std::cin >> rank;
                 // 檢查 rank 是否為合法值
                 if ((rank == "A" || rank == "J" || rank == "Q" || rank == "K") ||
@@ -506,17 +511,20 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
                 break;
             }
 
-            cout << "You used skill 1." << endl;
+            //cout << "You used skill 1." << endl;
 
-            cout << "Your hand know:" << endl;
+            cout << endl << "Your hands now:" << endl;
             showHand();
+            
             break;
         }
 
     case '2':
     {
         // 讓使用者輸入要尋找的玩家名稱
-        cout << "Enter the name of the player to get one Card: ";
+        cout << "------------------------------" << endl;
+        game.showPlayersNameAndChr();
+        cout << "Enter the Name of the player you want to Destroy Card of: ";
         string playerNameToDiscard;
         cin >> playerNameToDiscard;
 
@@ -534,13 +542,14 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
         // 如果找到玩家，執行技能
         if (targetPlayer != nullptr)
         {
+            targetPlayer->showHand();
             int rank;
             // 詢問rank
             while (true)
             {
                 // 詢問 rank
                 // 詢問 rank
-                std::cout << "Enter rank 1-13: ";
+                std::cout << "Enter the Value of card you want to Destroy(1-13): ";
                 std::cin >> rank;
                 // 檢查 rank 是否為合法值
                 if (rank >= 1 && rank <= 10)
@@ -553,10 +562,11 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
                 }
             }
             discardCard(targetPlayer, rank);
-            cout << "You discard value = " << rank << " crad. Player: " << targetPlayer->getName() << " is sad.";
+            //cout << "You discard value = " << rank << " crad. Player: " << targetPlayer->getName() << " is sad." << endl;
             cout << endl;
-            cout << "Yout hands now:";
+            cout << "Your hands now:" << endl;
             showHand();
+            
         }
         else
         {
@@ -813,7 +823,7 @@ Card *CardDeck::drawOneCard()
 // 根據 suit 和 rank 尋找特定的 Card 並返回指標，如果 isInDeck 為 false 則輸出訊息
 Card *CardDeck::specificCard(const string &suit, const string &rank, bool globalSearch)
 {
-    cout << "Searching for card: " << suit << "-" << rank << endl;
+    cout << endl<< "Searching for card: " << suit << "-" << rank << endl;
 
     // 使用標準函式 find_if 找到符合條件的卡片
     auto it = std::find_if(cards.begin(), cards.end(), [&](const Card &card)
@@ -825,18 +835,18 @@ Card *CardDeck::specificCard(const string &suit, const string &rank, bool global
         // 如果 isInDeck 為 false，輸出相應訊息
         if (!globalSearch && !it->isInDeck)
         {
-            cout << "Card found, but it's not in the deck." << endl;
+            cout << "- Card found, but it's not in deck." << endl;
             return nullptr;
         }
 
         // 返回卡片的指標
-        cout << "Card found!" << endl;
+        cout << "- Card found!" << endl;
         return &(*it);
     }
     else
     {
         // 若未找到，返回空指標
-        cout << "Card not found." << endl;
+        cout << "- Card not found..." << endl;
         return nullptr;
     }
 }
@@ -916,7 +926,6 @@ Record::Record(string playerName)
 // 更新玩家檔案
 void Record::updateRecord(bool winsToday, Player *&player)
 {
-    cout << endl;
     ofstream recordFile(filePath, ios::trunc);
     if (!recordFile)
         cout << "ERROR! Failed to update record!" << endl;
@@ -933,7 +942,7 @@ void Record::updateRecord(bool winsToday, Player *&player)
         {
             currentWins = 0;
         }
-        if (pointCnt <= 21 && cardCnt > maxCards && pointCnt > maxPoints)
+        if (pointCnt <= 21 && cardCnt > maxCards)
         {
             cout << playerName << " just break his/her own record! " << endl;
             this->maxCards = cardCnt;
@@ -960,10 +969,9 @@ void Record::print() const
         cout << "------------------------------" << endl
              << "Player name: " << playerName << endl
              << "Max cards per round: " << maxCards << endl
-             << "Max points per round: " << maxPoints << endl
+             << "Max points that round: " << maxPoints << endl
              << "Current win streaks: " << currentWins << endl
-             << "Total wins: " << totalWins << endl
-             << "------------------------------" << endl;
+             << "Total wins: " << totalWins << endl << endl;
     }
 }
 
@@ -1146,10 +1154,11 @@ void Game::showPlayersNameAndChr() const
         }
         else
         {
-            cout << "Unknown Character";
+            cout << "Enemy";
         }
         cout << endl;
     }
+    cout << endl;
 }
 
 // 顯示每位玩家的手牌
@@ -1157,9 +1166,9 @@ void Game::showPlayersHands() const
 {
     for (const Player *player : players)
     {
-        cout << "Name: " << player->getName() << "'s hand:" << endl;
+        cout << player->getName() << "'s hand:" << endl;
         player->showHand();
-        cout << endl;
+        
     }
 }
 
@@ -1250,8 +1259,8 @@ void Game::itemRound(bool whoWins[])
         if (whoWins[i] == 0)
         {
             player = getPlayerAtIndex(i);
-            cout << endl
-                 << player->getName() + ", you LOST the game...\n- Do you want to play Item Round? ";
+            printLong();
+            cout << player->getName() + ", you LOST the game...\n- Do you want to play Item Round? ";
             while (true)
             {
                 char move = 'N';
@@ -1435,6 +1444,19 @@ void Game::result(bool whoWins[])
             }
         }
     }
+    
+    cout << "Here are the final hands..." << endl;
+    player1->showHand();
+    player2->showHand();
+    
+   
+    char enter = 'N';
+    while (enter != 'Y')
+    {
+        cout << "Enter Y to Update Player Records: ";
+        cin >> enter;
+    }
+    printStage("Player's Records");
     player1->getRecord()->updateRecord(p1wins, player1);
     player2->getRecord()->updateRecord(p2wins, player2);
 
