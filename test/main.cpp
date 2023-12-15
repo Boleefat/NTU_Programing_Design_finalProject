@@ -19,13 +19,11 @@ int main()
     game.showPlayersNameAndChr(); // 確認玩家資訊
     game.enterYtoContinue();
     game.initialDeal();           // 進行初始發牌
-
     Player* enemy = new Enemy("Banker");
     game.addPlayer(enemy);  // 加入敵人（莊家）
     
+
     game.drawRound();  // 進行遊戲
-    
-    
     bool whoWins[2] = {0,0};
     game.result(whoWins);  // 判斷勝負
     
