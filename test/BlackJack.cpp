@@ -540,10 +540,10 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             {
                 // 詢問 rank
                 // 詢問 rank
-                std::cout << "Enter rank AJQK or 2-10: ";
+                std::cout << "Enter rank 1-13: ";
                 std::cin >> rank;
                 // 檢查 rank 是否為合法值
-                if (rank >= 1 && rank <= 13)
+                if (rank >= 1 && rank <= 10)
                 {
                     break; // 使用者輸入合法值，跳出迴圈
                 }
