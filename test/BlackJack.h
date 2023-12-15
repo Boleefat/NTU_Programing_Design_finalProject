@@ -14,12 +14,12 @@ struct SkillCounter;
 
 // classes ------------------------
 
-class Player;   // 必須是一個純粹抽象類別（pure abstract class）
-class Seeker;   // 由玩家操作的Character, 繼承自Player
-class Targetor; // 由玩家操作的Character, 繼承自Player
-class Enemy;    // 由電腦操作的莊家, 繼承自Player
+class Player;    // 必須是一個純粹抽象類別（pure abstract class）
+class Seeker;    // 由玩家操作的Character, 繼承自Player
+class Targetor;  // 由玩家操作的Character, 繼承自Player
+class Enemy;     // 由電腦操作的莊家, 繼承自Player
 
-class Item; // 道具卡 目前有3種
+class Item;  // 道具卡 目前有3種
 class RandomSwitch;
 class DrawOneFoldOne;
 class BothFoldOne;
@@ -28,20 +28,28 @@ class Game;
 class CardDeck;
 class Record;
 
+
+
+
+
+
+
+
 // Card struct -------------------------------------------
 struct Card
 {
-    string suit; // 花色
-    string rank; // 牌面數字
-    int value;   // 換算點數
+    string suit;  // 花色
+    string rank;  // 牌面數字
+    int value;    // 換算點數
     bool isInDeck;
 
     // 建構函式
     Card(const string &s, const string &r, int v);
-
+    
     // 印出Card資訊
     void print() const;
 };
+
 
 // SkillCounter struct ----------------------------------
 struct SkillCounter
@@ -54,6 +62,9 @@ struct SkillCounter
     SkillCounter();
 };
 
+
+
+
 /* Player class, 是一個 pure abstract class ------------------------------
  是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
@@ -63,8 +74,8 @@ protected:
     string name;
     vector<Card> hand;
     SkillCounter skillCounter;
-    Record *record;
-
+    Record* record;
+    
 public:
     virtual ~Player() = default; // 虛擬析構函數
 
@@ -78,27 +89,34 @@ public:
     void showHand() const;
 
     int calculateHandValue() const;
-
+    
     bool operator<(const Player &other) const;
 
     bool operator>(const Player &other) const;
-
-    bool operator>=(const Player &other) const;
-
-    bool operator<=(const Player &other) const;
-
-    bool operator==(const Player &other) const;
+    
+    bool operator>=(const Player& other) const;
+    
+    bool operator<=(const Player& other) const;
+    
+    bool operator==(const Player& other) const;
 
     void randomlyAddOneCard(CardDeck &deck);
 
     void addSpecificCard(Card *card);
-
-    Record *&getRecord();
-
-    virtual void playerDraw(int &temp, CardDeck &gameDeck) = 0;
-
-    virtual void playerMove(CardDeck &gameDeck, Game &game) = 0;
+    
+    Record*& getRecord();
+    
+    
+    
+    virtual void playerDraw(int &temp, CardDeck& gameDeck) = 0;
+    
+    
+    virtual void playerMove(CardDeck& gameDeck, Game& game) = 0;
 };
+
+
+
+
 
 /* Seeker class, 繼承 Player 這個類別 ----------------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Seeker的共同屬性 */
@@ -116,11 +134,17 @@ public:
 
     // skillTwo: Seeker uses a special ability to seek the deck
     void seekDeck(CardDeck &deck);
-
-    void playerDraw(int &temp, CardDeck &gameDeck);
-
-    void playerMove(CardDeck &gameDeck, Game &game);
+    
+   
+    
+    void playerDraw(int &temp, CardDeck& gameDeck);
+    
+    
+    void playerMove(CardDeck& gameDeck, Game& game);
 };
+
+
+
 
 /* Targetor class, 繼承 Player 這個類別 -----------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性 */
@@ -138,11 +162,16 @@ public:
 
     // skillTwo
     void discardCard(Player *targetPlayer, int value);
-
-    void playerDraw(int &temp, CardDeck &gameDeck);
-
-    void playerMove(CardDeck &gameDeck, Game &game);
+    
+    
+    void playerDraw(int &temp, CardDeck& gameDeck);
+    
+    
+    void playerMove(CardDeck& gameDeck, Game& game);
 };
+
+
+
 
 /* Enemy class, 繼承 Player 這個類別 ---------------------------
  是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性 */
@@ -152,11 +181,14 @@ class Enemy : public Player
 public:
     // Constructor for Enemy
     Enemy(const string &enemyName);
-
-    void playerDraw(int &temp, CardDeck &gameDeck);
-
-    void playerMove(CardDeck &gameDeck, Game &game);
+    
+    void playerDraw(int &temp, CardDeck& gameDeck);
+    
+    void playerMove(CardDeck& gameDeck, Game& game);
 };
+
+
+
 
 // CardDeck class, 牌組 -------------------------------------------
 class CardDeck
@@ -167,7 +199,6 @@ private:
 
     // 初始化卡片
     void initializeCards();
-
 public:
     // 建構函式並同時初始化 52 張卡片
     CardDeck();
@@ -188,47 +219,56 @@ public:
     bool isEmpty() const;
 };
 
+
+
+
+
 /* Item class 道具卡 ---------------------------------------------
 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
 
 class Item
 {
 protected:
-    string name;   // 道具卡名稱
-    Player *owner; // 擁有者
-    CardDeck deck; // 所屬牌組
-
+    string name;    // 道具卡名稱
+    Player* owner;  // 擁有者
+    CardDeck deck;  // 所屬牌組
+    
 public:
-    Item(Player *&owner, CardDeck &deck);
-    string getName() const;
-    virtual void useItem(Player *&target) = 0;
-    void foldOneCard(Player *&target);
+    Item(Player*& owner, CardDeck& deck);
+    string getName () const;
+    virtual void useItem(Player*& theOtherPlayer, Game& game) = 0;
+    void foldOneCard(Game& game, Player*& target);
 };
 
+
 // 道具卡 1：和另一位玩家隨機交換一張牌
-class RandomSwitch : public Item
+class RandomSwitch: public Item
 {
 public:
-    RandomSwitch(Player *&owner, CardDeck &deck);
-    void useItem(Player *&target);
+    RandomSwitch(Player*& owner, CardDeck& deck);
+    void useItem(Player*& theOtherPlayer, Game& game);
     int generateRandomNumber(int small, int large);
 };
 
+
 // 道具卡 2：重新抽一張牌, 棄掉自己一張牌
-class DrawOneFoldOne : public Item
+class DrawOneFoldOne: public Item
 {
 public:
-    DrawOneFoldOne(Player *&owner, CardDeck &deck);
-    void useItem(Player *&target);
+    DrawOneFoldOne(Player*& owner, CardDeck& deck);
+    void useItem(Player*& theOtherPlayer, Game& game);
 };
 
+
 // 道具卡 3：雙方各棄掉一張牌
-class BothFoldOne : public Item
+class BothFoldOne: public Item
 {
 public:
-    BothFoldOne(Player *&owner, CardDeck &deck);
-    void useItem(Player *&target);
+    BothFoldOne(Player*& owner, CardDeck& deck);
+    void useItem(Player*& theOtherPlayer, Game& game);
 };
+
+
 
 /* Game class --------------------------------------------------
 隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動 */
@@ -237,35 +277,36 @@ class Game
 {
 private:
     CardDeck gameDeck;        // 遊戲的卡片牌組
-    vector<Player *> players; // 儲存Player的ptr
-    vector<Item *> items;     // 儲存Item的ptr
-
+    vector<Player*> players; // 儲存Player的ptr
+    vector<Item*> items ;    // 儲存Item的ptr
+    
 public:
+    
     // 將 Item 加入遊戲給玩家
-    void addItem(Player *&player);
-
+    void addItem(Player*& player);
+    
     // 將 Player 加入 players的vector
-    void addPlayer(Player *player);
+    void addPlayer(Player* player);
 
     // 建立players的vector
     void addPlayers();
-    vector<Player *> &getPlayers();
-
+    vector<Player*>& getPlayers();
+    
     // Size of players
     int getNumPlayers() const;
-
+    
     // 讓玩家輸入Y以繼續遊戲
     void enterYtoContinue() const;
-
+    
     // 印出介紹
     void printIntro(const string intro) const;
-
+    
     // 印出分隔線
     void printLong() const;
-
+    
     // 印出下一階段
     void printStage(string stage) const;
-
+    
     // 進行初始發牌，每位玩家隨機抽兩張卡
     void initialDeal();
 
@@ -274,16 +315,17 @@ public:
 
     // 顯示每位玩家的手牌
     void showPlayersHands() const;
-
+    
+    
     // 回傳player的pointer
-    Player *getPlayerAtIndex(int index);
-
+    Player*& getPlayerAtIndex(int index);
+    
     // 判斷勝負
     void result(bool whoWins[]);
-
+    
     // 發牌回合跑一輪
     void drawRound();
-
+    
     // 道具回合
     void itemRound(bool whoWins[]);
 
@@ -291,18 +333,22 @@ public:
     ~Game();
 };
 
+
+
+
+
 // Record class --------------------------------------------
 class Record
 {
 private:
-    string playerName; // 玩家名稱
-    string filePath;   // 檔案路徑
-    int maxCards;      // 最高手牌數
-    int maxPoints;     // 最高點數
-    int currentWins;   // 連勝局數
-    int totalWins;     // 總勝場
+    string playerName;  // 玩家名稱
+    string filePath;    // 檔案路徑
+    int maxCards;       // 最高手牌數
+    int maxPoints;      // 最高點數
+    int currentWins;    // 連勝局數
+    int totalWins;      // 總勝場
 public:
-    Record(string playerName);                          // 建構函式（輸入玩家名稱）
-    void updateRecord(bool winsToday, Player *&player); // 更新玩家檔案
-    void print() const;                                 // 列印玩家檔案
+    Record(string playerName);  // 建構函式（輸入玩家名稱）
+    void updateRecord(bool winsToday, Player*& player);  // 更新玩家檔案
+    void print() const;  // 列印玩家檔案
 };
