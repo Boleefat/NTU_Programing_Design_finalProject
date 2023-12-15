@@ -23,13 +23,12 @@ int main()
     game.addPlayer(enemy);  // 加入敵人（莊家）
     
 
-    game.drawRound();  // 進行遊戲
+    game.drawRound();     // 進行21點
     bool whoWins[2] = {0,0};
     game.result(whoWins);  // 判斷勝負
     
-    game.itemRound(whoWins);  // Bonus 道具回合
-    
-    game.printStage("GAME ENDS");  
+    game.itemRound(whoWins);  // Bonus, 道具卡回合
+    game.printStage("GAME ENDS");  //遊戲結束
     
     return 0;
 }
