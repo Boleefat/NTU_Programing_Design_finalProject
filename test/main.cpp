@@ -23,7 +23,7 @@ int main()
     Player* enemy = new Enemy("Banker");
     game.addPlayer(enemy);  // 加入敵人（莊家）
     
-    game.drawRound();  //進行遊戲
+    game.drawRound();  // 進行遊戲
     
     
     bool whoWins[2] = {0,0};
