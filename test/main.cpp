@@ -20,42 +20,10 @@ int main()
     game.enterYtoContinue();
     game.initialDeal();           // 進行初始發牌
 
-    Enemy enemy("Banker");
-    game.addPlayer(&enemy);  // 加入敵人（莊家）
-
+    Player* enemy = new Enemy("Banker");
+    game.addPlayer(enemy);  // 加入敵人（莊家）
     
-    int temp1 = 0;
-    int temp2 = 0;
-    
-    do
-    {
-        game.enemyDraw(&enemy);
-        game.printLong();
-
-        for (int i = 0; i < game.getNumPlayers(); i++)
-        {
-            
-            cout << endl;
-            
-            game.playerMove(game.getPlayerAtIndex(i));
-        /*}
-        for (int i = 0; i < game.getNumPlayers(); i++)
-        {*/
-            if (i == 0)
-            {
-                game.playerDraw(game.getPlayerAtIndex(i), temp1);
-            }
-            else if (i == 1)
-            {
-                game.playerDraw(game.getPlayerAtIndex(i), temp2);
-            }
-            
-            if(temp1 == 0 || temp2 == 0)
-                game.printLong();
-        }
-        
-        
-    }while((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
+    game.drawRound();  //進行遊戲
     
     
     bool whoWins[2] = {0,0};
@@ -67,3 +35,4 @@ int main()
     
     return 0;
 }
+
