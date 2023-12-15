@@ -8,7 +8,7 @@
 #include "BlackJack.h"
 using namespace std;
 
-// Card struct, 撲克牌 -----------------------------------
+// Card struct, 撲克牌 -------------------------------------------------------------------
 
 
 // 建構函式
@@ -24,7 +24,7 @@ void Card::print() const
 
 
 
-// SkillCounter struct 技能使用狀態 ----------------------------
+// SkillCounter struct 技能使用狀態 ------------------------------------------------------------
 
 // 建構函式
 SkillCounter::SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(true), isSkillThreeAvailable(true) {}
@@ -33,7 +33,7 @@ SkillCounter::SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(tr
 
 
 
-/* Player class, 是一個pure abstract class --------------------------
+/* Player class, 是一個 pure abstract class ----------------------------------------------------------
  是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
 
@@ -194,7 +194,10 @@ Record*& Player::getRecord()
 }
 
 
-/* Seeker class, 繼承 Player 這個類別 ------------------
+
+
+
+/* Seeker class, 繼承 Player 這個類別 --------------------------------------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Seeker的共同屬性 */
 
 
@@ -379,7 +382,7 @@ void Seeker::playerDraw(int &temp, CardDeck& gameDeck)
 
 
 
-/* Targetor class, 繼承 Player 這個類別 ------------------
+/* Targetor class, 繼承 Player 這個類別 --------------------------------------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性 */
 
 // Constructor for Targetor
@@ -561,7 +564,7 @@ void Targetor::playerDraw(int &temp, CardDeck& gameDeck)
 
 
 
-/* Enemy class, 繼承 Player 這個類別 --------------------------------
+/* Enemy class, 繼承 Player 這個類別 ----------------------------------------------------------------
  是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性 */
 
 // Constructor for Enemy
@@ -597,9 +600,12 @@ void Enemy::playerMove(CardDeck& gameDeck, Game& game){}
     }
 
 
-/* Item class 道具卡 ------------------------------------------------
-道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
 
+
+
+
+/* Item class 道具卡 ---------------------------------------------------------------------------
+道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
 // 建構函式
 Item::Item(Player*& owner, CardDeck& deck)
 {
@@ -622,8 +628,8 @@ void Item::foldOneCard(Player*& target)
     cin >> rank;
     cout << "- Enter the SUIT of the card you choose: ";
     cin >> suit;
-    Card* search = deck.specificCard(suit, rank, true);
-    cout << search << endl;
+    Card* search = deck.specificCard(suit, rank, true);  // specificCard()如果傳true進去代表不論是否在牌組裡都要回傳那張牌的ptr
+
     
     //vector<Card>::iterator fold = find(target->getHand().begin(), target->getHand().end(),*search);
     //target->getHand().erase(fold);
@@ -633,12 +639,14 @@ void Item::foldOneCard(Player*& target)
 }
 
 
-// 道具卡 1：和另一位玩家隨機交換一張牌
+// 道具卡 1：和另一位玩家隨機交換一張牌 --------------------------------------------------------
+// 建構函式
 RandomSwitch::RandomSwitch(Player*& owner, CardDeck& deck) : Item(owner, deck)
 {
     this->name = "RandomSwitch";
 }
 
+// 使用
 void RandomSwitch::useItem(Player*& target)
 {
     cout << "Item used: Random Switch" << endl;
@@ -652,7 +660,6 @@ void RandomSwitch::useItem(Player*& target)
     target->showHand();
     
 }
-
 // 亂數產生器
 int RandomSwitch::generateRandomNumber(int small, int large)
 {
@@ -663,13 +670,15 @@ int RandomSwitch::generateRandomNumber(int small, int large)
 }
 
 
-// 道具卡 2：重新抽一張牌, 棄掉一張牌
+// 道具卡 2：重新抽一張牌, 棄掉一張牌 --------------------------------------------------------
+// 建構函式
 DrawOneFoldOne::DrawOneFoldOne(Player*& owner, CardDeck& deck) : Item(owner, deck)
 {
     this->name = "DrawOneFoldOne";
 }
 
-void DrawOneFoldOne::useItem(Player*& opponent)
+//
+void DrawOneFoldOne::useItem(Player*& theOtherPlayer)
 {
     Card* reDraw = deck.drawOneCard();
     cout << "Item used: Draw One, Fold One Card" << endl
@@ -680,25 +689,31 @@ void DrawOneFoldOne::useItem(Player*& opponent)
     
     owner->addSpecificCard(reDraw);
     owner->showHand();
-    opponent->showHand();
+    theOtherPlayer->showHand();
 }
 
 
-// 道具卡 3：雙方各棄掉一張牌, 由對方先棄
+// 道具卡 3：雙方各棄掉一張牌, 由對方先棄 --------------------------------------------------------
+// 建構函式
 BothFoldOne::BothFoldOne(Player*& owner, CardDeck& deck) : Item(owner, deck)
 {
     this->name = "BothFoldOne";
 }
 
-void BothFoldOne::useItem(Player*& opponent)
+// 使用
+void BothFoldOne::useItem(Player*& theOtherPlayer)
 {
     cout << "Item used: Both Fold One" << endl;
-    this->foldOneCard(opponent);
+    this->foldOneCard(theOtherPlayer);
     this->foldOneCard(this->owner);
 }
 
 
-// CardDeck class ------------------------------------
+
+
+
+
+// CardDeck class -------------------------------------------------------------------------------
 
 // 建構函式
 CardDeck::CardDeck()
@@ -828,7 +843,7 @@ void CardDeck::initializeCards()
 
 
 
-// Record class -------------------------------------
+// Record class --------------------------------------------------------------------------------
 
 // 建構函式
 Record::Record(string playerName)
@@ -924,7 +939,7 @@ void Record::print() const
 }
 
 
-/* Game class --------------------------------------
+/* Game class ---------------------------------------------------------------------------
 隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動 */
 
 
@@ -1439,5 +1454,6 @@ void Game::drawRound()
         
     }while((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
 }
+
 
 
