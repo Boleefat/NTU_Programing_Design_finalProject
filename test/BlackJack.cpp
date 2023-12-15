@@ -8,7 +8,8 @@
 #include "BlackJack.h"
 using namespace std;
 
-// Card struct -----------------------------------
+// Card struct, 撲克牌 -----------------------------------
+
 
 // 建構函式
 Card::Card(const string &s, const string &r, int v) : suit(s), rank(r), value(v), isInDeck(true) {}
@@ -20,7 +21,10 @@ void Card::print() const
 }
 
 
-// SkillCounter struct ----------------------------
+
+
+
+// SkillCounter struct 技能使用狀態 ----------------------------
 
 // 建構函式
 SkillCounter::SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(true), isSkillThreeAvailable(true) {}
@@ -29,78 +33,12 @@ SkillCounter::SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(tr
 
 
 
-
-
-
-
-
 /* Player class, 是一個pure abstract class --------------------------
  是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
+
 // 建構函式
-Player::Player(const string &playerName) : name(playerName), skillCounter{}, record(nullptr)
-{
-    
-}
-
-// 比較運算子 <
-bool Player::operator<(const Player &other) const
-{
-    if (calculateHandValue() == other.calculateHandValue())
-    {
-        // 如果手牌值相同，比較牌數
-        return hand.size() < other.hand.size();
-    }
-    // 手牌值不同，直接比較手牌值
-    return calculateHandValue() < other.calculateHandValue();
-}
-
-
-// 比較運算子 >
-bool Player::operator>(const Player &other) const
-{
-    if (calculateHandValue() == other.calculateHandValue())
-    {
-        // 如果手牌值相同，比較牌數
-        return hand.size() > other.hand.size();
-    }
-    // 手牌值不同，直接比較手牌值
-    return calculateHandValue() > other.calculateHandValue();
-}
-
-
-// 比較運算子 >=
-bool Player::operator>=(const Player& other) const
-{
-    if (calculateHandValue() == other.calculateHandValue())
-    {
-    // 如果手牌值相同，比較牌數
-        return hand.size() >= other.hand.size();
-    }
-    // 手牌值不同，直接比較手牌值
-    return calculateHandValue() >= other.calculateHandValue();
-}
-
-
-// 比較運算子 <=
-bool Player::operator<=(const Player& other) const
-{
-    if (calculateHandValue() == other.calculateHandValue())
-    {
-        // 如果手牌值相同，比較牌數
-        return hand.size() <= other.hand.size();
-    }
-    // 手牌值不同，直接比較手牌值
-    return calculateHandValue() <= other.calculateHandValue();
-}
-
-
-// 比較運算子 ==
-bool Player::operator==(const Player& other) const
-{
-    // 同時比較手牌值和牌數
-    return (calculateHandValue() == other.calculateHandValue()) && (hand.size() == other.hand.size());
-}
+Player::Player(const string &playerName) : name(playerName), skillCounter{}, record(nullptr) {}
 
 
 // 計算手牌總值
@@ -131,6 +69,59 @@ int Player::calculateHandValue() const
 
     return totalValue;
 }
+
+
+// 比較運算子 <
+bool Player::operator<(const Player &other) const
+{
+    if (calculateHandValue() == other.calculateHandValue())
+    {
+        // 如果手牌值相同，比較牌數
+        return hand.size() < other.hand.size();
+    }
+    // 手牌值不同，直接比較手牌值
+    return calculateHandValue() < other.calculateHandValue();
+}
+// 比較運算子 >
+bool Player::operator>(const Player &other) const
+{
+    if (calculateHandValue() == other.calculateHandValue())
+    {
+        // 如果手牌值相同，比較牌數
+        return hand.size() > other.hand.size();
+    }
+    // 手牌值不同，直接比較手牌值
+    return calculateHandValue() > other.calculateHandValue();
+}
+// 比較運算子 >=
+bool Player::operator>=(const Player& other) const
+{
+    if (calculateHandValue() == other.calculateHandValue())
+    {
+    // 如果手牌值相同，比較牌數
+        return hand.size() >= other.hand.size();
+    }
+    // 手牌值不同，直接比較手牌值
+    return calculateHandValue() >= other.calculateHandValue();
+}
+// 比較運算子 <=
+bool Player::operator<=(const Player& other) const
+{
+    if (calculateHandValue() == other.calculateHandValue())
+    {
+        // 如果手牌值相同，比較牌數
+        return hand.size() <= other.hand.size();
+    }
+    // 手牌值不同，直接比較手牌值
+    return calculateHandValue() <= other.calculateHandValue();
+}
+// 比較運算子 ==
+bool Player::operator==(const Player& other) const
+{
+    // 同時比較手牌值和牌數
+    return (calculateHandValue() == other.calculateHandValue()) && (hand.size() == other.hand.size());
+}
+
 
 
 // 顯示手牌
@@ -253,6 +244,141 @@ void Seeker::seekDeck(CardDeck &deck)
 
 
 
+
+// Seeker的move
+void Seeker::playerMove(CardDeck& gameDeck, Game& game)
+{
+    cout << "Next Player: " << getName() << ", Character: Seeker" << endl;
+    game.enterYtoContinue();
+    showHand();
+
+    char move;
+    while (true)
+    {
+        cout << "Do you want to use your skill? (1: SeekPlayer, 2: SeekDeck, N: Do Nothing): ";
+        cin >> move;
+
+        if (move == '1' || move == '2'|| move == 'N')
+        {
+            break; // 輸入正確，跳出迴圈
+        }
+        else
+        {
+            cout << "Invalid move. Please enter 1 or 2 or N." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    switch (move)
+    {
+        {
+        case '1':
+            
+            // 展示玩家資訊
+            cout << "------------------------------" << endl;
+            game.showPlayersNameAndChr();
+            
+            // 讓使用者輸入要尋找的玩家名稱
+            cout << "Enter the name of the player to seek: ";
+            string playerNameToSeek;
+            cin >> playerNameToSeek;
+            
+            // 在 players 中尋找玩家指標
+            Player *targetPlayer = nullptr;
+            for (Player *p : game.getPlayers())
+            {
+                if (p->getName() == playerNameToSeek)
+                {
+                    targetPlayer = p;
+                    break;
+                }
+            }
+            
+            // 如果找到玩家，執行技能
+            if (targetPlayer != nullptr)
+            {
+                seekAnotherPlayer(targetPlayer);
+            }
+            else
+            {
+                cout << "Player not found." << endl;
+            }
+            break; // 這裡加上 break
+        }
+        case '2':
+            
+            seekDeck(gameDeck);
+            break;
+
+    case 'N':
+        // 不做任何事
+        //cout << "Doing nothing..." << endl;
+        break;
+    }
+
+    //seeker->showHand();
+    //cout << "\n";
+}
+
+
+
+
+
+//seeker draw card
+void Seeker::playerDraw(int &temp, CardDeck& gameDeck)
+{
+    //cout << seeker->getName() << "'s turn: \n";
+    //seeker->showHand();
+    if (calculateHandValue() >= 21)
+        {
+               cout << "- You cannot draw anymore...\n";
+        temp = 1;
+    }
+    else
+    {
+        char move;
+        while (true)
+        {
+                   cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+                   cin >> move;
+                
+                   if (move == 'Y')
+                   {
+                       randomlyAddOneCard(gameDeck);
+                       temp = 0;
+                       if(calculateHandValue()>=21)
+                           temp = 1;
+                       showHand();
+                       break; // 輸入正確，跳出迴圈
+                   }
+                   else if (move == 'N')
+                   {
+                       //cout << "Do nothing\n";
+                        temp = 1;
+                       break;
+                   }
+                   else
+                   {
+                           temp = 0;
+                cout << "Invalid move. Please enter Y, N." << endl;
+                           cin.clear();
+                           cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                   }
+            }
+    }
+        
+}
+
+
+
+
+
+
+
+
+
+
 /* Targetor class, 繼承 Player 這個類別 ------------------
 是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性 */
 
@@ -261,6 +387,7 @@ Targetor::Targetor(const string &playerName) : Player(playerName)
 {
     this->record = new Record(playerName);
 }
+
 
 // skillOne
 void Targetor::takeSpecificCard(CardDeck &deck, const string &suit, const string &rank)
@@ -330,6 +457,107 @@ void Targetor::discardCard(Player *targetPlayer, int value)
 }
 
 
+// Targetor的move
+void Targetor::playerMove(CardDeck& gameDeck, Game& game)
+{
+    cout << "Next Player: " << getName() << ", Targetor" << endl;
+    game.enterYtoContinue();
+    showHand();
+
+    char move;
+    while (true)
+    {
+        cout << "Do you want to use your skill? (1: GetCard, 2: DestroyCard, N: Do Nothing): ";
+        cin >> move;
+
+        if (move == '1' || move == '2'|| move == 'N')
+        {
+            break; // 輸入正確，跳出迴圈
+        }
+        else
+        {
+            cout << "Invalid move. Please enter 1 or 2 or N." << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
+    switch (move)
+    {
+        {
+        case '1':
+            
+            //還沒寫
+            cout<<"used skill"<< endl;
+            
+            break;
+        }
+            
+        case '2':
+        {
+            //還沒寫
+            cout<<"used skill"<< endl;
+            
+            break;
+        }
+        
+        case 'N':
+        // 不做任何事
+        //cout << "Doing nothing..." << endl;
+        break;
+    }
+}
+
+    //targetor draw card
+void Targetor::playerDraw(int &temp, CardDeck& gameDeck)
+{
+    //targetor->showHand();
+    //cout << targetor->getName() << "'s turn: \n";
+    if (calculateHandValue() >= 21)
+        {
+               cout << "- You cannot draw anymore...\n";
+        temp = 1;
+    }
+    else
+    {
+        char move;
+        while (true)
+        {
+                   cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
+                   cin >> move;
+                
+                   if (move == 'Y')
+                   {
+                       randomlyAddOneCard(gameDeck);
+                       temp = 0;
+                       if(calculateHandValue()>=21)
+                           temp = 1;
+                       showHand();
+                       break; // 輸入正確，跳出迴圈
+                   }
+                   else if (move == 'N')
+                   {
+                       //cout << "Do nothing\n";
+                        temp = 1;
+                       break;
+                   }
+                   else
+                   {
+                           temp = 0;
+                cout << "Invalid move. Please enter Y, N." << endl;
+                           cin.clear();
+                           cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                   }
+            }
+    }
+    
+}
+
+
+
+
+
+
 
 
 
@@ -338,7 +566,35 @@ void Targetor::discardCard(Player *targetPlayer, int value)
 
 // Constructor for Enemy
 Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
+void Enemy::playerMove(CardDeck& gameDeck, Game& game){}
+    
 
+    //enemy Draw a card
+    void Enemy::playerDraw(int &temp, CardDeck& gameDeck)
+    {
+        const int threshold = 17;
+
+        //     檢查敵人手牌總點數
+        int totalValue = calculateHandValue();
+
+        cout << getName() << "'s turn, Character: Enemy" << endl;
+
+        // 如果手牌總點數小於 17，則繼續抽牌
+        if (totalValue < threshold)
+        {
+            
+            randomlyAddOneCard(gameDeck);
+
+            // 更新手牌總點數
+            totalValue = calculateHandValue();
+        }
+        else
+        {
+            cout << "Enemy stopped drawing cards." << endl;
+        }
+        
+        
+    }
 
 
 /* Item class 道具卡 ------------------------------------------------
@@ -685,6 +941,11 @@ void Game::addPlayer(Player *player)
     players.push_back(player);
 }
 
+vector<Player*>& Game::getPlayers()
+{
+    return this->players;
+}
+
 
 // 建立players的vector
 void Game::addPlayers()
@@ -760,6 +1021,21 @@ void Game::addPlayers()
         }
     }
 }
+
+
+
+// 讓玩家輸入Y以繼續遊戲
+void Game::enterYtoContinue() const
+{
+    char enter = 'N';
+    while(enter != 'Y')
+    {
+        cout << "Enter Y to continue: ";
+        cin >> enter;
+    }
+
+}
+
 
 
 // 印出角色介紹
@@ -857,275 +1133,6 @@ void Game::showPlayersHands() const
 }
 
 
-// 判斷player的type，呼叫該type的move
-void Game::playerMove(Player *player)
-{
-    if (player == nullptr)
-    {
-        cout << "Invalid player." << endl;
-        return;
-    }
-
-    // Check the player's type using dynamic_cast
-    Seeker *seeker = dynamic_cast<Seeker *>(player);
-    Targetor *targetor = dynamic_cast<Targetor *>(player);
-    Enemy *enemy = dynamic_cast<Enemy *>(player);
-
-    if (seeker != nullptr)
-    {
-        seekerMove(seeker);
-    }
-    else if (targetor != nullptr)
-    {
-        targetorMove(targetor);
-    }
-    else
-    {
-        //cout << "Unknown Character" << endl;
-    }
-}
-
-// 判斷character職業，並抽牌
-void Game::playerDraw(Player *player, int &temp)
-{
-    if (player == nullptr)
-    {
-        cout << "Invalid player." << endl;
-        return;
-    }
-
-    // Check the player's type using dynamic_cast
-    Seeker *seeker = dynamic_cast<Seeker *>(player);
-    Targetor *targetor = dynamic_cast<Targetor *>(player);
-    Enemy *enemy = dynamic_cast<Enemy *>(player);
-
-    if (seeker != nullptr)
-    {
-        seekerDraw(seeker, temp);
-    }
-    else if (targetor != nullptr)
-    {
-        targetorDraw(targetor, temp);
-    }
-    else
-    {
-        //cout << "Unknown Character" << endl;
-    }
-}
-    
-//seeker draw card
-void Game::seekerDraw(Seeker *seeker, int &temp)
-{
-    //cout << seeker->getName() << "'s turn: \n";
-    //seeker->showHand();
-    if (seeker->calculateHandValue() >= 21)
-        {
-               cout << "- You cannot draw anymore...\n";
-        temp = 1;
-    }
-    else
-    {
-        char move;
-        while (true)
-        {
-                   cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
-                   cin >> move;
-                
-                   if (move == 'Y')
-                   {
-                       seeker->randomlyAddOneCard(gameDeck);
-                       temp = 0;
-                       if(seeker->calculateHandValue()>=21)
-                           temp = 1;
-                       seeker->showHand();
-                       break; // 輸入正確，跳出迴圈
-                   }
-                   else if (move == 'N')
-                   {
-                       //cout << "Do nothing\n";
-                        temp = 1;
-                       break;
-                   }
-                   else
-                   {
-                           temp = 0;
-                cout << "Invalid move. Please enter Y, N." << endl;
-                           cin.clear();
-                           cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                   }
-            }
-    }
-        
-}
-    
-//targetor draw card
-void Game::targetorDraw(Targetor *targetor, int &temp)
-{
-    //targetor->showHand();
-    //cout << targetor->getName() << "'s turn: \n";
-    if (targetor->calculateHandValue() > 21)
-        {
-               cout << " - You busted and you cannot draw anymore.\n";
-        temp = 1;
-    }
-    else
-    {
-        char move;
-        while (true)
-            {
-                    cout << "Do you want to draw a card? (Y: Draw a card, N: Do nothing): ";
-                   cin >> move;
-
-                   if (move == 'Y')
-                   {
-                       targetor->randomlyAddOneCard(gameDeck);
-                           temp = 0;
-                       if(targetor->calculateHandValue()>21)
-                           temp = 1;
-                       targetor->showHand();
-                break; // 輸入正確，跳出迴圈
-                    }
-                    else if (move == 'N')
-                   {
-                       //cout << "Do nothing\n";
-                        temp = 1;
-                        break;
-            }
-                    else
-            {
-                        temp = 0;
-                        cout << "Invalid move. Please enter Y, N." << endl;
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    }
-            }
-    }
-    
-}
-    
-//enemy Draw a card
-void Game::enemyDraw(Enemy *enemy)
-{
-    const int threshold = 17;
-
-    //     檢查敵人手牌總點數
-    int totalValue = enemy->calculateHandValue();
-
-    cout << enemy->getName() << "'s turn, Character: Enemy" << endl;
-    enterYtoContinue();
-
-    // 如果手牌總點數小於 17，則繼續抽牌
-    if (totalValue < threshold)
-    {
-        
-        enemy->randomlyAddOneCard(gameDeck);
-
-        // 更新手牌總點數
-        totalValue = enemy->calculateHandValue();
-    }
-    else
-    {
-        cout << "Enemy stops drawing cards." << endl;
-    }
-    
-    enemy->showHand();
-    
-}
-
-
-// Seeker的move
-void Game::seekerMove(Seeker *seeker)
-{
-    cout << "Next Player: " << seeker->getName() << ", Character: Seeker" << endl;
-    enterYtoContinue();
-    seeker->showHand();
-
-    char move;
-    while (true)
-    {
-        cout << "Do you want to use your skill? (1: SeekPlayer, 2: SeekDeck, N: Do Nothing): ";
-        cin >> move;
-
-        if (move == '1' || move == '2'|| move == 'N')
-        {
-            break; // 輸入正確，跳出迴圈
-        }
-        else
-        {
-            cout << "Invalid move. Please enter 1 or 2 or N." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        }
-    }
-
-    switch (move)
-    {
-        {
-        case '1':
-            
-            // 展示玩家資訊
-            cout << "------------------------------" << endl;
-            showPlayersNameAndChr();
-            
-            // 讓使用者輸入要尋找的玩家名稱
-            cout << "Enter the name of the player to seek: ";
-            string playerNameToSeek;
-            cin >> playerNameToSeek;
-            
-            // 在 players 中尋找玩家指標
-            Player *targetPlayer = nullptr;
-            for (Player *p : players)
-            {
-                if (p->getName() == playerNameToSeek)
-                {
-                    targetPlayer = p;
-                    break;
-                }
-            }
-            
-            // 如果找到玩家，執行技能
-            if (targetPlayer != nullptr)
-            {
-                seeker->seekAnotherPlayer(targetPlayer);
-            }
-            else
-            {
-                cout << "Player not found." << endl;
-            }
-            break; // 這裡加上 break
-        }
-        case '2':
-            
-            seeker->seekDeck(gameDeck);
-            break;
-
-    case 'N':
-        // 不做任何事
-        //cout << "Doing nothing..." << endl;
-        break;
-    }
-
-    //seeker->showHand();
-    //cout << "\n";
-}
-
-
-
-
-
-
-
-
-
-
-
-
-// Targetor的move
-void Game::targetorMove(Targetor *Targetor)
-{
-    // Implement Targetor's move logic here
-}
-
 
 // 回傳player的pointer
 Player *Game::getPlayerAtIndex(int index)
@@ -1142,16 +1149,14 @@ Player *Game::getPlayerAtIndex(int index)
 }
 
 
-// 讓玩家輸入Y以繼續遊戲
-void Game::enterYtoContinue() const
-{
-    char enter = 'N';
-    while(enter != 'Y')
-    {
-        cout << "Enter Y to continue: ";
-        cin >> enter;
-    }
 
+// destructor
+Game::~Game()
+{
+    /*for (Player *player : players)
+    {
+        delete player;
+    }*/
 }
 
 
@@ -1253,6 +1258,10 @@ void Game::itemRound(bool whoWins[])
         }
     }
     
+    
+    
+    bool itemWins[2] = {0,0};
+    result(itemWins);  // 判斷勝負
     
 }
 
@@ -1391,11 +1400,44 @@ void Game::result(bool whoWins[])
 }
 
 
-// destructor
-Game::~Game()
+
+void Game::drawRound()
 {
-    /*for (Player *player : players)
+    int tempEnemy = 0;
+    int temp1 = 0;
+    int temp2 = 0;
+    
+    do
     {
-        delete player;
-    }*/
+        getPlayerAtIndex(2)->playerDraw(tempEnemy, gameDeck);
+        enterYtoContinue();
+        getPlayerAtIndex(2)->showHand();
+        printLong();
+
+        for (int i = 0; i < getNumPlayers(); i++)
+        {
+            
+            cout << endl;
+            
+            getPlayerAtIndex(i)->playerMove(gameDeck, *this);
+        /*}
+        for (int i = 0; i < game.getNumPlayers(); i++)
+        {*/
+            if (i == 0)
+            {
+                getPlayerAtIndex(i)->playerDraw(temp1, gameDeck);
+            }
+            else if (i == 1)
+            {
+                getPlayerAtIndex(i)->playerDraw(temp2, gameDeck);
+            }
+            
+            if(temp1 == 0 || temp2 == 0)
+                printLong();
+        }
+        
+        
+    }while((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
 }
+
+
