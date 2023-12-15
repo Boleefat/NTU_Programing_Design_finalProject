@@ -65,7 +65,7 @@ struct SkillCounter
 
 
 
-/* Player class, 是一個pure abstract class ------------------------------
+/* Player class, 是一個 pure abstract class ------------------------------
  是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
 class Player
@@ -105,6 +105,13 @@ public:
     void addSpecificCard(Card *card);
     
     Record*& getRecord();
+    
+    
+    
+    virtual void playerDraw(int &temp, CardDeck& gameDeck) = 0;
+    
+    
+    virtual void playerMove(CardDeck& gameDeck, Game& game) = 0;
 };
 
 
@@ -127,6 +134,13 @@ public:
 
     // skillTwo: Seeker uses a special ability to seek the deck
     void seekDeck(CardDeck &deck);
+    
+   
+    
+    void playerDraw(int &temp, CardDeck& gameDeck);
+    
+    
+    void playerMove(CardDeck& gameDeck, Game& game);
 };
 
 
@@ -148,6 +162,12 @@ public:
 
     // skillTwo
     void discardCard(Player *targetPlayer, int value);
+    
+    
+    void playerDraw(int &temp, CardDeck& gameDeck);
+    
+    
+    void playerMove(CardDeck& gameDeck, Game& game);
 };
 
 
@@ -161,12 +181,16 @@ class Enemy : public Player
 public:
     // Constructor for Enemy
     Enemy(const string &enemyName);
+    
+    void playerDraw(int &temp, CardDeck& gameDeck);
+    
+    void playerMove(CardDeck& gameDeck, Game& game);
 };
 
 
 
 
-// CardDeck class -------------------------------------------
+// CardDeck class, 牌組 -------------------------------------------
 class CardDeck
 {
 private:
@@ -266,6 +290,7 @@ public:
 
     // 建立players的vector
     void addPlayers();
+    vector<Player*>& getPlayers();
     
     // Size of players
     int getNumPlayers() const;
@@ -290,33 +315,16 @@ public:
 
     // 顯示每位玩家的手牌
     void showPlayersHands() const;
-
-    // 判斷player的type，呼叫該type的move
-    void playerMove(Player *player);
     
-    // Seeker的move
-    void seekerMove(Seeker *seeker);
-    
-    // Targetor的move
-    void targetorMove(Targetor *Targetor);
-
-    //判斷player的type，呼叫該type的抽卡行動
-    void playerDraw(Player *player, int &temp);
-    
-    //Seeker抽卡
-    void seekerDraw(Seeker *seeker, int &temp);
-    
-    // Targetor抽卡
-    void targetorDraw(Targetor *targetor, int &temp);
-
-    //enemy 抽卡
-    void enemyDraw(Enemy *enemy);
     
     // 回傳player的pointer
     Player *getPlayerAtIndex(int index);
     
     // 判斷勝負
     void result(bool whoWins[]);
+    
+    // 發牌回合跑一輪
+    void drawRound();
     
     // 道具回合
     void itemRound(bool whoWins[]);
