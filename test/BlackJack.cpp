@@ -447,7 +447,7 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
         {
         case '1':
             char suit;
-            int rank;
+            string rank;
 
             // 詢問花色
             while (true)
@@ -469,15 +469,18 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             while (true)
             {
                 // 詢問 rank
-                std::cout << "Enter rank (1-13): ";
+                std::cout << "Enter rank AJQK or 2-10: ";
                 std::cin >> rank;
                 // 檢查 rank 是否為合法值
-                if (rank >= 1 && rank <= 13)
+                if ((rank == "A" || rank == "J" || rank == "Q" || rank == "K") ||
+                    (rank == "2" || rank == "3" || rank == "4" || rank == "5" ||
+                     rank == "6" || rank == "7" || rank == "8" || rank == "9" || rank == "10"))
                 {
                     break; // 使用者輸入合法值，跳出迴圈
                 }
                 else
                 {
+
                     std::cerr << "Invalid rank. Please enter a rank between 1 and 13." << std::endl;
                 }
             }
@@ -487,19 +490,19 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             switch (suit)
             {
             case 'H':
-                takeSpecificCard(gameDeck, "Hearts", to_string(rank));
+                takeSpecificCard(gameDeck, "Hearts", (rank));
                 break;
             case 'D':
 
-                takeSpecificCard(gameDeck, "Diamonds", to_string(rank));
+                takeSpecificCard(gameDeck, "Diamonds", (rank));
                 break;
             case 'C':
 
-                takeSpecificCard(gameDeck, "Clubs", to_string(rank));
+                takeSpecificCard(gameDeck, "Clubs", (rank));
                 break;
             case 'S':
 
-                takeSpecificCard(gameDeck, "Spades", to_string(rank));
+                takeSpecificCard(gameDeck, "Spades", (rank));
                 break;
             }
 
@@ -536,7 +539,8 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             while (true)
             {
                 // 詢問 rank
-                std::cout << "Enter rank (1-13): ";
+                // 詢問 rank
+                std::cout << "Enter rank AJQK or 2-10: ";
                 std::cin >> rank;
                 // 檢查 rank 是否為合法值
                 if (rank >= 1 && rank <= 13)
