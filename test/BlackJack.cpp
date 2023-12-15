@@ -544,25 +544,21 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
         {
             targetPlayer->showHand();
             int rank;
-            // 詢問rank
             while (true)
             {
-                // 詢問 rank
-                // 詢問 rank
                 std::cout << "Enter the Value of card you want to Destroy(1-13): ";
                 std::cin >> rank;
-                // 檢查 rank 是否為合法值
+                // 檢查是否為合法值
                 if (rank >= 1 && rank <= 10)
                 {
                     break; // 使用者輸入合法值，跳出迴圈
                 }
                 else
                 {
-                    std::cerr << "Invalid rank. Please enter a rank between 1 and 13." << std::endl;
+                    std::cerr << "Invalid Value. Please enter a Value between 1 and 13." << std::endl;
                 }
             }
             discardCard(targetPlayer, rank);
-            //cout << "You discard value = " << rank << " crad. Player: " << targetPlayer->getName() << " is sad." << endl;
             cout << endl;
             cout << "Your hands now:" << endl;
             showHand();
@@ -672,23 +668,51 @@ Item::Item(Player *&owner, CardDeck &deck)
 string Item::getName() const { return this->name; }
 
 // 叫玩家選一張牌捨棄
-void Item::foldOneCard(Player *&target)
+void Item::foldOneCard(Game& game, Player*& targetPlayer)
 {
-    cout << target->getName() + ", please choose ONE card on YOUR hand to FOLD..." << endl;
-    target->showHand();
+    if (targetPlayer != nullptr)
+    {
+        targetPlayer->showHand();
+        int value;
+        while (true)
+        {
 
-    string rank = "NULL", suit = "NULL";
-    cout << "- Enter the RANK of the card you choose: ";
-    cin >> rank;
-    cout << "- Enter the SUIT of the card you choose: ";
-    cin >> suit;
-    Card *search = deck.specificCard(suit, rank, true); // specificCard()如果傳true進去代表不論是否在牌組裡都要回傳那張牌的ptr
+            std::cout << "Enter the Value of card you want to Fold(1-13): ";
+            std::cin >> value;
+            // 檢查是否為合法值
+            if (value >= 1 && value <= 10)
+            {
+                break; // 使用者輸入合法值，跳出迴圈
+            }
+            else
+            {
+                std::cerr << "Invalid value. Please enter a value between 1 and 13." << std::endl;
+            }
+        }
+        // 使用 getHand 方法獲取目標玩家的手牌
+        vector<Card> &targetHand = targetPlayer->getHand();
 
-    // vector<Card>::iterator fold = find(target->getHand().begin(), target->getHand().end(),*search);
-    // target->getHand().erase(fold);
+        // 使用標準函式 find_if 找到符合條件的卡片
+        auto it = std::find_if(targetHand.begin(), targetHand.end(), [&](const Card &card)
+                               { return card.value == value; });
 
-    cout << "Card folded successfully.";
-    target->showHand();
+        // 檢查是否找到卡片
+        if (it != targetHand.end())
+        {
+            // 從玩家手牌中刪除該卡片
+            targetHand.erase(it);
+
+            // 輸出訊息
+            cout << "- Fold a card with value " << value << " on " << targetPlayer->getName() << "'s hand." << endl;
+            targetPlayer->showHand();
+        }
+        else
+        {
+            // 如果卡片不在手中，輸出相應訊息
+            cout << "- Destroy failed, you can use it again." << endl;
+        }
+        
+        }
 }
 
 // 道具卡 1：和另一位玩家隨機交換一張牌 --------------------------------------------------------
@@ -699,22 +723,22 @@ RandomSwitch::RandomSwitch(Player *&owner, CardDeck &deck) : Item(owner, deck)
 }
 
 // 使用
-void RandomSwitch::useItem(Player *&target)
+void RandomSwitch::useItem(Player*& theOtherPlayer, Game& game)
 {
-    cout << "Item used: Random Switch" << endl;
-    if (owner->getHand().empty() || target->getHand().empty()) {
+    cout << endl << "Item used: Random Switch" << endl;
+    if (owner->getHand().empty() || theOtherPlayer->getHand().empty()) {
         cout << "No cards to switch." << endl;
         return;
     }
 // 確保隨機數生成範圍在手牌數量內
     int ownerRandom = generateRandomNumber(0, owner->getHand().size() - 1);
-    int targetRandom = generateRandomNumber(0, target->getHand().size() - 1);
+    int theOtherRandom = generateRandomNumber(0, theOtherPlayer->getHand().size() - 1);
     // cout << "Randomly selected indices: " << random_user << " and " << random_target << endl;
-    swap(owner->getHand()[ownerRandom], target->getHand()[targetRandom]);
-    // cout << "Cards exchanged successfully!" << endl;
+    swap(owner->getHand()[ownerRandom], theOtherPlayer->getHand()[theOtherRandom]);
     cout << "Cards were switched successfully." << endl;
     owner->showHand();
-    target->showHand();
+    theOtherPlayer->showHand();
+    game.enterYtoContinue();
 }
 // 亂數產生器
 int RandomSwitch::generateRandomNumber(int small, int large)
@@ -732,24 +756,22 @@ DrawOneFoldOne::DrawOneFoldOne(Player *&owner, CardDeck &deck) : Item(owner, dec
     this->name = "DrawOneFoldOne";
 }
 
-//
-void DrawOneFoldOne::useItem(Player *&theOtherPlayer)
+// 使用
+void DrawOneFoldOne::useItem(Player*& theOtherPlayer, Game& game)
 {
     Card *reDraw = deck.drawOneCard();
-    cout << "Item used: Draw One, Fold One Card" << endl
-         << "- The new card you've drawn: ";
+    cout << endl << "Item used: Draw One, Fold One Card" << endl;
      if (reDraw == nullptr) {
         cout << "No more cards to draw." << endl;
         return;
     }
-    cout << "The new card you've drawn: ";
+    cout << "- The new card you've drawn: ";
     reDraw->print();
 
-    this->foldOneCard(owner);
+    this->foldOneCard(game, owner);
 
     owner->addSpecificCard(reDraw);
     owner->showHand();
-    theOtherPlayer->showHand();
 }
 
 
@@ -761,16 +783,18 @@ BothFoldOne::BothFoldOne(Player *&owner, CardDeck &deck) : Item(owner, deck)
 }
 
 // 使用
-void BothFoldOne::useItem(Player *&theOtherPlayer)
+void BothFoldOne::useItem(Player*& theOtherPlayer, Game& game)
 {
-    cout << "Item used: Both Fold One" << endl;
+    cout << endl << "Item used: Both Fold One" << endl;
     if (owner->getHand().empty() || theOtherPlayer->getHand().empty()) {
         cout << "No cards to fold." << endl;
         return;
     }
-    cout << "Both players fold one card each." << endl;
-    this->foldOneCard(theOtherPlayer);
-    this->foldOneCard(this->owner);
+    cout << "- Both players needs to fold one card each." << endl;
+    this->foldOneCard(game, theOtherPlayer);
+    this->foldOneCard(game, this->owner);
+    
+    game.enterYtoContinue();
 }
 
 
@@ -1190,7 +1214,7 @@ void Game::showPlayersHands() const
 }
 
 // 回傳player的pointer
-Player *Game::getPlayerAtIndex(int index)
+Player*& Game::getPlayerAtIndex(int index)
 {
     if (index >= 0 && index < players.size())
     {
@@ -1199,7 +1223,7 @@ Player *Game::getPlayerAtIndex(int index)
     else
     {
         // 处理索引越界的情况，这里返回nullptr，你可以根据需要修改
-        return nullptr;
+        return players[0];
     }
 }
 
@@ -1231,21 +1255,18 @@ void Game::addItem(Player *&player)
 
             if (itemType == '1')
             {
-                newItem = new RandomSwitch(player, this->gameDeck);
+                newItem = new RandomSwitch(player, gameDeck);
                 cout << player->getName() + " just earned an Random Switch Card!" << endl;
-                newItem->useItem(player);
             }
             else if (itemType == '2')
             {
-                newItem = new DrawOneFoldOne(player, this->gameDeck);
+                newItem = new DrawOneFoldOne(player, gameDeck);
                 cout << player->getName() + " just earned an Draw And FOLD Card!" << endl;
-                newItem->useItem(player);
             }
             else if (itemType == '3')
             {
-                newItem = new BothFoldOne(player, this->gameDeck);
+                newItem = new BothFoldOne(player, gameDeck);
                 cout << player->getName() + " just earned Both Fold One Card!" << endl;
-                newItem->useItem(player);
             }
             else if (itemType == 'N')
             {
@@ -1289,9 +1310,24 @@ void Game::itemRound(bool whoWins[])
                     {
                         printStage("Item Round");
                         addItem(player);
+                        char enter = 'N';
+                        while (enter != 'Y')
+                        {
+                            cout << player->getName()+", enter Y to USE your Item Card: ";
+                            cin >> enter;
+                        }
+                        if(i == 0)
+                        {
+                            items[0]->useItem(getPlayerAtIndex(1), *this);
+                        }
+                        else if(i == 1)
+                        {
+                            items[0]->useItem(getPlayerAtIndex(0), *this);
+                        }
                     }
                     else if (move == 'N')
                     {
+                        break;
                     }
                     else
                     {
@@ -1305,8 +1341,11 @@ void Game::itemRound(bool whoWins[])
                     cout << e.what() << " Please try again." << endl;
                 }
             }
+            
         }
     }
+    
+    
 
     bool itemWins[2] = {0, 0};
     result(itemWins); // 判斷勝負
@@ -1518,3 +1557,4 @@ void Game::drawRound()
 
     } while ((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
 }
+
