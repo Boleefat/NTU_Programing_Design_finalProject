@@ -702,6 +702,11 @@ RandomSwitch::RandomSwitch(Player *&owner, CardDeck &deck) : Item(owner, deck)
 void RandomSwitch::useItem(Player *&target)
 {
     cout << "Item used: Random Switch" << endl;
+    if (owner->getHand().empty() || target->getHand().empty()) {
+        cout << "No cards to switch." << endl;
+        return;
+    }
+// 確保隨機數生成範圍在手牌數量內
     int ownerRandom = generateRandomNumber(0, owner->getHand().size() - 1);
     int targetRandom = generateRandomNumber(0, target->getHand().size() - 1);
     // cout << "Randomly selected indices: " << random_user << " and " << random_target << endl;
@@ -733,6 +738,11 @@ void DrawOneFoldOne::useItem(Player *&theOtherPlayer)
     Card *reDraw = deck.drawOneCard();
     cout << "Item used: Draw One, Fold One Card" << endl
          << "- The new card you've drawn: ";
+     if (reDraw == nullptr) {
+        cout << "No more cards to draw." << endl;
+        return;
+    }
+    cout << "The new card you've drawn: ";
     reDraw->print();
 
     this->foldOneCard(owner);
@@ -741,6 +751,7 @@ void DrawOneFoldOne::useItem(Player *&theOtherPlayer)
     owner->showHand();
     theOtherPlayer->showHand();
 }
+
 
 // 道具卡 3：雙方各棄掉一張牌, 由對方先棄 --------------------------------------------------------
 // 建構函式
@@ -753,9 +764,15 @@ BothFoldOne::BothFoldOne(Player *&owner, CardDeck &deck) : Item(owner, deck)
 void BothFoldOne::useItem(Player *&theOtherPlayer)
 {
     cout << "Item used: Both Fold One" << endl;
+    if (owner->getHand().empty() || theOtherPlayer->getHand().empty()) {
+        cout << "No cards to fold." << endl;
+        return;
+    }
+    cout << "Both players fold one card each." << endl;
     this->foldOneCard(theOtherPlayer);
     this->foldOneCard(this->owner);
 }
+
 
 // CardDeck class -------------------------------------------------------------------------------
 
