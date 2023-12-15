@@ -638,7 +638,7 @@ void Enemy::playerDraw(int &temp, CardDeck &gameDeck)
     //     檢查敵人手牌總點數
     int totalValue = calculateHandValue();
 
-    cout << getName() << "的機會, 角色: Enemy" << endl;
+    cout << getName() << "的回合, 角色: Enemy" << endl;
 
     // 如果手牌總點數小於 17，則繼續抽牌
     if (totalValue < threshold)
@@ -1048,6 +1048,27 @@ void Game::printGameRules() const {
     }
 }
 
+void Game::printCharacterSkills() const {
+	cout << "************************************************************" << endl;
+    cout << "角色技能介紹:" << endl;
+    cout << "Seeker :" << endl;
+    cout << "1. 尋找玩家手牌: 觀察一次另一位玩家的手牌。" << endl;
+    cout << "2. 尋找牌組: 觀察一次牌組的剩餘卡牌。" << endl;
+    
+    cout << "\nTargetor :" << endl;
+    cout << "1. 獲得特定卡牌: 從牌組中獲得一張指定的卡牌。" << endl;
+    cout << "2. 摧毀卡牌: 摧毀一名玩家手中指定點數的卡牌。" << endl;
+    cout << "************************************************************" << endl << endl;
+
+    // 等待玩家準備好
+    char ready;
+    cout << "輸入 'Y' 繼續: ";
+    cin >> ready;
+    while(ready != 'Y' && ready != 'y') {
+        cout << "輸入 'Y' 繼續: ";
+        cin >> ready;
+    }
+}
 // 將 Player 加入 players的vector
 void Game::addPlayer(Player *player)
 {
