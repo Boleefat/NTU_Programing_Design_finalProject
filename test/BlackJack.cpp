@@ -8,7 +8,7 @@
 #include "BlackJack.h"
 using namespace std;
 
-// Card struct, 撲克牌 -------------------------------------------------------------------
+// Card struct ------------------------------------------------------------------------------------------------------------
 
 // 建構函式
 Card::Card(const string &s, const string &r, int v) : suit(s), rank(r), value(v), isInDeck(true) {}
@@ -19,16 +19,21 @@ void Card::print() const
     cout << suit << "-" << rank << ", value: " << value << endl;
 }
 
-// SkillCounter struct 技能使用狀態 ------------------------------------------------------------
+
+
+
+// SkillCounter struct ------------------------------------------------------------------------------------------------------------
 
 // 建構函式
 SkillCounter::SkillCounter() : isSkillOneAvailable(true), isSkillTwoAvailable(true), isSkillThreeAvailable(true) {}
 
-/* Player class, 是一個 pure abstract class ----------------------------------------------------------
- 是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為 */
 
+
+// Player class, 是一個 pure abstract class ----------------------------------------------------------------------------------------
+// 是遊戲中所有玩家（包含敵我）的基礎類別，裡面定義了所有玩家都需要有的屬性和行為
 // 建構函式
 Player::Player(const string &playerName) : name(playerName), skillCounter{}, record(nullptr) {}
+
 
 // 計算手牌總值
 int Player::calculateHandValue() const
@@ -47,8 +52,7 @@ int Player::calculateHandValue() const
         }
     }
 
-    /*有誤
-    // 處理 A 的情況，使其適應不同的情境
+    /*
     while (numAces > 0 && totalValue > 21)
     {
         totalValue -= 10;
@@ -59,6 +63,7 @@ int Player::calculateHandValue() const
     return totalValue;
 }
 
+// 運算子多載
 // 比較運算子 <
 bool Player::operator<(const Player &other) const
 {
@@ -110,6 +115,7 @@ bool Player::operator==(const Player &other) const
     return (calculateHandValue() == other.calculateHandValue()) && (hand.size() == other.hand.size());
 }
 
+
 // 顯示手牌
 void Player::showHand() const
 {
@@ -128,13 +134,14 @@ void Player::showHand() const
     cout << endl << endl;;
 }
 
+
 // 隨機添加一張牌到手牌
 void Player::randomlyAddOneCard(CardDeck &deck)
 {
     Card *drawnCard = deck.drawOneCard(); // 從卡組中抽一張牌的指標
     if (drawnCard != nullptr)
     {
-        hand.push_back(*drawnCard); // 添加該牌到玩家手牌中 ////注意這邊是shallow copy
+        hand.push_back(*drawnCard); // 添加該牌到玩家手牌中 //// 注意這邊是shallow copy
         cout << "- " + name + " got ONE card: " << drawnCard->suit << "-" << drawnCard->rank << ", value: " << drawnCard->value << endl;
     }
     else
@@ -143,7 +150,7 @@ void Player::randomlyAddOneCard(CardDeck &deck)
     }
 }
 
-// 在 Player 類別中新增函式，將指定的牌添加到手牌
+// 將指定的牌添加到手牌
 void Player::addSpecificCard(Card *card)
 {
     if (card != nullptr)
@@ -163,23 +170,25 @@ vector<Card> &Player::getHand()
 {
     return hand;
 }
-
 vector<Card> Player::getHand() const
 {
     return hand;
 }
 
+// 取得玩家的記錄檔
 Record *&Player::getRecord()
 {
     return record;
 }
 
-/* Seeker class, 繼承 Player 這個類別 --------------------------------------------------
-是玩遊戲的人可以選擇的我方角色，定義所有Seeker的共同屬性 */
+
+// Seeker class, 繼承 Player 這個類別 -------------------------------------------------------------------------------------
+// 是玩遊戲的人可以選擇的我方角色，定義所有Seeker的共同屬性
 
 // Constructor for Seeker
 Seeker::Seeker(const string &playerName) : Player(playerName)
 {
+    // 建立玩家記錄檔
     this->record = new Record(playerName);
 }
 
@@ -303,8 +312,7 @@ void Seeker::playerMove(CardDeck &gameDeck, Game &game)
 // seeker draw card
 void Seeker::playerDraw(int &temp, CardDeck &gameDeck)
 {
-    // cout << seeker->getName() << "'s turn: \n";
-    // seeker->showHand();
+
     if (calculateHandValue() >= 21)
     {
         cout << "- You cannot draw anymore...\n";
@@ -344,12 +352,13 @@ void Seeker::playerDraw(int &temp, CardDeck &gameDeck)
     }
 }
 
-/* Targetor class, 繼承 Player 這個類別 --------------------------------------------------
-是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性 */
 
+// Targetor class, 繼承 Player 這個類別 -----------------------------------------------------------------------------
+// 是玩遊戲的人可以選擇的我方角色，定義所有Targetor的共同屬性
 // Constructor for Targetor
 Targetor::Targetor(const string &playerName) : Player(playerName)
 {
+    // 建立玩家記錄檔
     this->record = new Record(playerName);
 }
 
@@ -486,7 +495,7 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
                 else
                 {
 
-                    std::cerr << "Invalid rank. Please enter a rank between 1 and 13." << std::endl;
+                    std::cerr << "Invalid rank. Please enter AJQK or 2~10." << std::endl;
                 }
             }
 
@@ -524,7 +533,7 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
         // 讓使用者輸入要尋找的玩家名稱
         cout << "------------------------------" << endl;
         game.showPlayersNameAndChr();
-        cout << "Enter the Name of the player you want to Destroy Card of: ";
+        cout << "Enter the Name of the player to Destroy his/her Card: ";
         string playerNameToDiscard;
         cin >> playerNameToDiscard;
 
@@ -546,7 +555,7 @@ void Targetor::playerMove(CardDeck &gameDeck, Game &game)
             int rank;
             while (true)
             {
-                std::cout << "Enter the Value of card you want to Destroy(1-13): ";
+                std::cout << "Enter the Value of card you want to Destroy(1~13): ";
                 std::cin >> rank;
                 // 檢查是否為合法值
                 if (rank >= 1 && rank <= 10)
@@ -622,9 +631,9 @@ void Targetor::playerDraw(int &temp, CardDeck &gameDeck)
     }
 }
 
-/* Enemy class, 繼承 Player 這個類別 ----------------------------------------------------------------
- 是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性 */
 
+// Enemy class, 繼承 Player 這個類別 ----------------------------------------------------------------------------------------
+//是由電腦自動操作的敵方角色，定義所有Enemy的共同屬性
 // Constructor for Enemy
 Enemy::Enemy(const string &enemyName) : Player(enemyName) {}
 void Enemy::playerMove(CardDeck &gameDeck, Game &game) {}
@@ -634,9 +643,9 @@ void Enemy::playerDraw(int &temp, CardDeck &gameDeck)
 {
     const int threshold = 17;
 
-    //     檢查敵人手牌總點數
+    //  檢查敵人手牌總點數
     int totalValue = calculateHandValue();
-
+    
     cout << getName() << "'s turn, Character: Enemy" << endl;
 
     // 如果手牌總點數小於 17，則繼續抽牌
@@ -654,8 +663,12 @@ void Enemy::playerDraw(int &temp, CardDeck &gameDeck)
     }
 }
 
-/* Item class 道具卡 ---------------------------------------------------------------------------
-道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
+
+
+
+
+// Item class 道具卡 ----------------------------------------------------------------------------------------------
+// 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性
 // 建構函式
 Item::Item(Player *&owner, CardDeck &deck)
 {
@@ -674,48 +687,50 @@ void Item::foldOneCard(Game& game, Player*& targetPlayer)
     {
         targetPlayer->showHand();
         int value;
-        while (true)
-        {
-
-            std::cout << "Enter the Value of card you want to Fold(1-13): ";
-            std::cin >> value;
-            // 檢查是否為合法值
-            if (value >= 1 && value <= 10)
+        while(true){
+            while (true)
             {
-                break; // 使用者輸入合法值，跳出迴圈
+                
+                std::cout << targetPlayer->getName()+", enter the Value of card you want to Fold(1~13): ";
+                std::cin >> value;
+                // 檢查是否為合法值
+                if (value >= 1 && value <= 10)
+                {
+                    break; // 使用者輸入合法值，跳出迴圈
+                }
+                else
+                {
+                    std::cerr << "Invalid value. Please enter a value between 1 and 13." << std::endl;
+                }
+            }
+            // 使用 getHand 方法獲取目標玩家的手牌
+            vector<Card> &targetHand = targetPlayer->getHand();
+            
+            // 使用標準函式 find_if 找到符合條件的卡片
+            auto it = std::find_if(targetHand.begin(), targetHand.end(), [&](const Card &card)
+                                   { return card.value == value; });
+            
+            // 檢查是否找到卡片
+            if (it != targetHand.end())
+            {
+                // 從玩家手牌中刪除該卡片
+                targetHand.erase(it);
+                
+                // 輸出訊息
+                cout << "- Fold a card with value " << value << " on " << targetPlayer->getName() << "'s hand." << endl;
+                targetPlayer->showHand();
+                break;
             }
             else
             {
-                std::cerr << "Invalid value. Please enter a value between 1 and 13." << std::endl;
+                // 如果卡片不在手中，輸出相應訊息
+                cout << "- Card not found." << endl;
             }
         }
-        // 使用 getHand 方法獲取目標玩家的手牌
-        vector<Card> &targetHand = targetPlayer->getHand();
-
-        // 使用標準函式 find_if 找到符合條件的卡片
-        auto it = std::find_if(targetHand.begin(), targetHand.end(), [&](const Card &card)
-                               { return card.value == value; });
-
-        // 檢查是否找到卡片
-        if (it != targetHand.end())
-        {
-            // 從玩家手牌中刪除該卡片
-            targetHand.erase(it);
-
-            // 輸出訊息
-            cout << "- Fold a card with value " << value << " on " << targetPlayer->getName() << "'s hand." << endl;
-            targetPlayer->showHand();
-        }
-        else
-        {
-            // 如果卡片不在手中，輸出相應訊息
-            cout << "- Destroy failed, you can use it again." << endl;
-        }
-        
-        }
+    }
 }
 
-// 道具卡 1：和另一位玩家隨機交換一張牌 --------------------------------------------------------
+// 道具卡 1：和另一位玩家隨機交換一張牌 ---------------------------------------------------------------------------------
 // 建構函式
 RandomSwitch::RandomSwitch(Player *&owner, CardDeck &deck) : Item(owner, deck)
 {
@@ -725,7 +740,11 @@ RandomSwitch::RandomSwitch(Player *&owner, CardDeck &deck) : Item(owner, deck)
 // 使用
 void RandomSwitch::useItem(Player*& theOtherPlayer, Game& game)
 {
-    cout << endl << "Item used: Random Switch" << endl;
+    cout << endl << "Before Switch:" << endl;
+    owner->showHand();
+    theOtherPlayer->showHand();
+    game.enterYtoContinue();
+    cout << "Item used: Random Switch" << endl;
     if (owner->getHand().empty() || theOtherPlayer->getHand().empty()) {
         cout << "No cards to switch." << endl;
         return;
@@ -736,9 +755,7 @@ void RandomSwitch::useItem(Player*& theOtherPlayer, Game& game)
     // cout << "Randomly selected indices: " << random_user << " and " << random_target << endl;
     swap(owner->getHand()[ownerRandom], theOtherPlayer->getHand()[theOtherRandom]);
     cout << "Cards were switched successfully." << endl;
-    owner->showHand();
-    theOtherPlayer->showHand();
-    game.enterYtoContinue();
+
 }
 // 亂數產生器
 int RandomSwitch::generateRandomNumber(int small, int large)
@@ -749,7 +766,7 @@ int RandomSwitch::generateRandomNumber(int small, int large)
     return dis(gen);
 }
 
-// 道具卡 2：重新抽一張牌, 棄掉一張牌 --------------------------------------------------------
+// 道具卡 2：重新抽一張牌, 棄掉一張牌 --------------------------------------------------------------------------------
 // 建構函式
 DrawOneFoldOne::DrawOneFoldOne(Player *&owner, CardDeck &deck) : Item(owner, deck)
 {
@@ -765,17 +782,19 @@ void DrawOneFoldOne::useItem(Player*& theOtherPlayer, Game& game)
         cout << "No more cards to draw." << endl;
         return;
     }
-    cout << "- The new card you've drawn: ";
+    cout << "The new card you've drawn:\n- ";
     reDraw->print();
 
     this->foldOneCard(game, owner);
 
     owner->addSpecificCard(reDraw);
-    owner->showHand();
+    cout << "- "+ owner->getName() +" got ONE card: ";
+    reDraw->print();
+    game.enterYtoContinue();
 }
 
 
-// 道具卡 3：雙方各棄掉一張牌, 由對方先棄 --------------------------------------------------------
+// 道具卡 3：雙方各棄掉一張牌, 由對方先棄 -------------------------------------------------------------------------------
 // 建構函式
 BothFoldOne::BothFoldOne(Player *&owner, CardDeck &deck) : Item(owner, deck)
 {
@@ -790,15 +809,14 @@ void BothFoldOne::useItem(Player*& theOtherPlayer, Game& game)
         cout << "No cards to fold." << endl;
         return;
     }
-    cout << "- Both players needs to fold one card each." << endl;
+    cout << "Both players needs to fold one card each." << endl;
     this->foldOneCard(game, theOtherPlayer);
     this->foldOneCard(game, this->owner);
     
-    game.enterYtoContinue();
 }
 
 
-// CardDeck class -------------------------------------------------------------------------------
+// CardDeck class -------------------------------------------------------------------------------------------
 
 // 建構函式
 CardDeck::CardDeck()
@@ -923,7 +941,7 @@ void CardDeck::initializeCards()
     }
 }
 
-// Record class --------------------------------------------------------------------------------
+// Record class ----------------------------------------------------------------------------------------------------
 
 // 建構函式
 Record::Record(string playerName)
@@ -983,7 +1001,7 @@ void Record::updateRecord(bool winsToday, Player *&player)
         {
             currentWins = 0;
         }
-        if (pointCnt <= 21 && cardCnt > maxCards)
+        if (pointCnt <= 21 &&(cardCnt > maxCards || (cardCnt == maxCards && pointCnt > maxPoints)))
         {
             cout << playerName << " just break his/her own record! " << endl;
             this->maxCards = cardCnt;
@@ -1016,8 +1034,16 @@ void Record::print() const
     }
 }
 
-/* Game class ---------------------------------------------------------------------------
-隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動 */
+
+
+
+
+
+
+
+
+// Game class -----------------------------------------------------------------------------------------------------
+// 隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動
 
 // Size of players
 int Game::getNumPlayers() const
@@ -1025,7 +1051,7 @@ int Game::getNumPlayers() const
     return players.size();
 }
 
-// 將 Player 加入 players的vector
+// 將 Player 加入players的vector
 void Game::addPlayer(Player *player)
 {
     players.push_back(player);
@@ -1125,11 +1151,11 @@ void Game::enterYtoContinue() const
 // 印出角色介紹
 void Game::printIntro(const string file) const
 {
+    // 讀取txt檔
     ifstream intro("./English_intros/" + file + ".txt");
     if (intro)
     {
-        /*cout << "Here's the introduction of the "+ file +":" << endl
-        << "------------------------------";*/
+        //cout << "Here's the introduction of the "+ file +":" << endl;
         printLong();
         char line[100];
         while (!intro.eof())
@@ -1141,11 +1167,14 @@ void Game::printIntro(const string file) const
     intro.close();
 }
 
+
+// 印出分隔線
 void Game::printLong() const
 {
     cout << "************************************************************" << endl;
 }
 
+// 印出大標題
 void Game::printStage(string stage) const
 {
     printLong();
@@ -1160,8 +1189,13 @@ void Game::printStage(string stage) const
 // 進行初始發牌，每位玩家隨機抽兩張卡
 void Game::initialDeal()
 {
-    printStage("Game Begins");
-
+    printStage("Black Jack Begins");
+    for (Player *player : players)  // 清空手牌
+    {
+        player->getHand().clear();
+    }
+    this->gameDeck.initializeCards();  // 洗牌
+    
     for (Player *player : players)
     {
         // 每位玩家抽兩張卡
@@ -1171,6 +1205,7 @@ void Game::initialDeal()
         player->addSpecificCard(drawnCard1);
         player->addSpecificCard(drawnCard2);
     }
+    
 }
 
 // 顯示每位玩家的名稱和角色類型
@@ -1202,16 +1237,7 @@ void Game::showPlayersNameAndChr() const
     cout << endl;
 }
 
-// 顯示每位玩家的手牌
-void Game::showPlayersHands() const
-{
-    for (const Player *player : players)
-    {
-        cout << player->getName() << "'s hand:" << endl;
-        player->showHand();
-        
-    }
-}
+
 
 // 回傳player的pointer
 Player*& Game::getPlayerAtIndex(int index)
@@ -1222,12 +1248,27 @@ Player*& Game::getPlayerAtIndex(int index)
     }
     else
     {
-        // 处理索引越界的情况，这里返回nullptr，你可以根据需要修改
+        // 处理索引越界的情况，可以根据需要修改
         return players[0];
     }
 }
 
-// destructor
+
+
+// 顯示每位玩家的手牌  // 注意一下這個function沒用到********************************************************
+void Game::showPlayersHands() const
+{
+    for (const Player *player : players)
+    {
+        cout << player->getName() << "'s hand:" << endl;
+        player->showHand();
+        
+    }
+}
+
+
+
+// destructor  // 這邊的delete還沒處理**************************************************************
 Game::~Game()
 {
     /*for (Player *player : players)
@@ -1236,18 +1277,21 @@ Game::~Game()
     }*/
 }
 
+
+
+
 // 新增item到遊戲
 void Game::addItem(Player *&player)
 {
     cout << player->getName() + ", please choose ONE Item Card..." << endl
          << "- 1: Random Switch" << endl
          << "- 2: Draw One, Fold One" << endl
-         << "- 3: Both Fold One" << endl
-         << "Enter N to CANCEL." << endl;
+    << "- 3: Both Fold One" << endl;
+    
     while (true)
     {
         char itemType = '0';
-        cout << "- Your Choice: ";
+        cout << "Your Choice: ";
         cin >> itemType;
         try
         {
@@ -1256,24 +1300,21 @@ void Game::addItem(Player *&player)
             if (itemType == '1')
             {
                 newItem = new RandomSwitch(player, gameDeck);
-                cout << player->getName() + " just earned an Random Switch Card!" << endl;
+                cout << endl << player->getName() + " earned an Random Switch Card!" << endl;
             }
             else if (itemType == '2')
             {
                 newItem = new DrawOneFoldOne(player, gameDeck);
-                cout << player->getName() + " just earned an Draw And FOLD Card!" << endl;
+                cout << endl << player->getName() + " earned an Draw And Fold Card!" << endl;
             }
             else if (itemType == '3')
             {
                 newItem = new BothFoldOne(player, gameDeck);
-                cout << player->getName() + " just earned Both Fold One Card!" << endl;
-            }
-            else if (itemType == 'N')
-            {
+                cout << endl << player->getName() + " earned an Both Fold One Card!" << endl;
             }
             else
             {
-                throw invalid_argument("Invalid item class");
+                throw invalid_argument("Invalid item.");
             }
 
             // 將道具加入遊戲
@@ -1288,32 +1329,33 @@ void Game::addItem(Player *&player)
     }
 }
 
-void Game::itemRound(bool whoWins[])
+void Game::itemRound(bool whoWins[], bool& play)
 {
     Player *player = nullptr;
-
     for (int i = 0; i < 2; i++)
     {
+        
         if (whoWins[i] == 0)
         {
             player = getPlayerAtIndex(i);
             printLong();
-            cout << player->getName() + ", you LOST the game...\n- Do you want to play Item Round? ";
+            cout << player->getName() + ", you LOST this round...\n\nDo you want to play BONUS Item Round?"<< endl;
             while (true)
             {
                 char move = 'N';
-                cout << "(I: Item Round, N: Do Nothing): ";
+                cout  << "(Y: Play bonus Round, N: Exit and update player's record): ";
                 cin >> move;
                 try
                 {
-                    if (move == 'I')
+                    if (move == 'Y')
                     {
-                        printStage("Item Round");
+                        cout << endl;
+                        printStage("Bonus: Item Round");
                         addItem(player);
                         char enter = 'N';
                         while (enter != 'Y')
                         {
-                            cout << player->getName()+", enter Y to USE your Item Card: ";
+                            cout << "- Enter Y to use your Item Card: ";
                             cin >> enter;
                         }
                         if(i == 0)
@@ -1324,16 +1366,20 @@ void Game::itemRound(bool whoWins[])
                         {
                             items[0]->useItem(getPlayerAtIndex(0), *this);
                         }
+                        this->items.clear();
+                        break;
                     }
                     else if (move == 'N')
                     {
+                        cout << endl;
+                        play = false;
                         break;
                     }
                     else
                     {
                         throw invalid_argument("Invalid");
                     }
-
+                    
                     break; // 跳出無窮迴圈，因為輸入正確
                 }
                 catch (const invalid_argument &e)
@@ -1346,9 +1392,7 @@ void Game::itemRound(bool whoWins[])
     }
     
     
-
-    bool itemWins[2] = {0, 0};
-    result(itemWins); // 判斷勝負
+   
 }
 
 void Game::result(bool whoWins[])
@@ -1501,23 +1545,16 @@ void Game::result(bool whoWins[])
         }
     }
     
-    cout << "Here are the final hands..." << endl;
+    // 顯示玩家的最後牌面
+    cout << endl << "Here are the final hands..." << endl;
     player1->showHand();
     player2->showHand();
     
-   
-    char enter = 'N';
-    while (enter != 'Y')
-    {
-        cout << "Enter Y to Update Player Records: ";
-        cin >> enter;
-    }
-    printStage("Player's Records");
-    player1->getRecord()->updateRecord(p1wins, player1);
-    player2->getRecord()->updateRecord(p2wins, player2);
-
+    
+    // 記錄玩家勝負
     whoWins[0] = p1wins;
     whoWins[1] = p2wins;
+    
 }
 
 void Game::drawRound()
@@ -1556,5 +1593,39 @@ void Game::drawRound()
         }
 
     } while ((temp1 != 1 && temp2 != 1) || (temp1 == 1 && temp2 != 1) || (temp1 != 1 && temp2 == 1));
+}
+
+
+bool Game::playAgain()
+{
+    
+    while (true)
+    {
+        char move = 'N';
+        cout << endl << "Black Jack Ended. Do you want to play again? (Y: Yes, N: No): ";
+        cin >> move;
+        cout << endl;
+        try
+        {
+            if (move == 'Y')
+            {
+                return true;
+            }
+            else if (move == 'N')
+            {
+                return false;
+            }
+            else
+            {
+                throw invalid_argument("Invalid.");
+            }
+
+            break; // 跳出無窮迴圈，因為輸入正確
+        }
+        catch (const invalid_argument &e)
+        {
+            cout << e.what() << " Please enter Y or N." << endl;
+        }
+    }
 }
 
