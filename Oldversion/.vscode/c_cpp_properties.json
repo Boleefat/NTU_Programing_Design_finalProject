@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\Coding_Enviroment\\mingw64\\bin\\g++.exe",
+            "intelliSenseMode": "windows-gcc-x64",
+            "cppStandard": "gnu++17"
+        }
+    ],
+    "version": 4
+}

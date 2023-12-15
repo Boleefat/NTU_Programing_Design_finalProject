@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <ctime>
 #include <fstream>
-#include "BlackJack.h"
+//#include "BlackJack.h"////////////////////注意這邊要換一夏
+#include "English_BlackJack.h"
 using namespace std;
 
 
@@ -14,7 +15,7 @@ int main()
     // initial setting
     Game game; // 創建遊戲物件
     CardDeck deck;
-    game.printStage("Ｗelcome to Black Jack!");
+    game.printStage("Welcome to Black Jack!");
     game.addPlayers();            // 加入玩家
     game.showPlayersNameAndChr(); // 確認玩家資訊
     game.enterYtoContinue();

@@ -1,0 +1,9 @@
+This game currently features two types of roles:
+
+1.Seeker with two abilities:
+(1) View the remaining cards in the deck.
+(2) View the hand of a specific player.
+
+2.Targetor with two abilities:
+(1) Acquire a specific card from the deck.
+(2) Instruct a designated player to discard a card of a specified value.
