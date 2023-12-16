@@ -651,9 +651,12 @@ void Enemy::playerDraw(int &temp, CardDeck &gameDeck)
     }
     else
     {
-        cout << "Enemy 停止抽牌." << endl;
+        cout << "莊家停止抽牌." << endl;
     }
 }
+
+
+
 
 /* Item class 道具卡 ---------------------------------------------------------------------------
 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性 */
@@ -1089,7 +1092,7 @@ void Game::addPlayers()
     {
         try
         {
-            cout << "請輸入玩家數量 (目前只能輸入2 ): ";
+            cout << "請輸入玩家數量 (抱歉目前只能輸入2 QAQ ): ";
             cin >> numPlayers;
 
             if (cin.fail() || numPlayers < 2 || numPlayers > 2)
@@ -1216,6 +1219,7 @@ void Game::initialDeal()
         player->addSpecificCard(drawnCard2);
     }
 }
+
 
 // 顯示每位玩家的名稱和角色類型
 void Game::showPlayersNameAndChr() const
