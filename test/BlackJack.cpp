@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ctime>
 #include <fstream>
+#include <stdexcept>
 #include "BlackJack.h"
 using namespace std;
 
