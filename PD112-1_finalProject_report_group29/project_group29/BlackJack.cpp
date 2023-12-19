@@ -429,7 +429,7 @@ void Targetor::discardCard(Player *targetPlayer, int value)
 // Targetor的move
 void Targetor::playerMove(CardDeck &gameDeck, Game &game)
 {
-    cout << "Next Player: " << getName() << ", Targetor" << endl;
+    cout << "Next Player: " << getName() << ", Character: Targetor" << endl;
     game.enterYtoContinue();
     showHand();
 
@@ -1048,7 +1048,7 @@ void Record::print() const
 // constructor
 Game::Game()
 {
-    this->printStage("Welcom to Unfair Black Jack！");
+    this->printStage("Welcome to Unfair Black Jack！");
     CardDeck deck;
     this->gameDeck = deck;  // 建立牌組
     this->addPlayers();     // 加入玩家
