@@ -1,4 +1,4 @@
 本遊戲目前有三種道具卡：
-Random Switch：和另一位玩家隨機交換一張牌
-Draw and Fold：再加一張新牌，但要捨棄手上一張舊牌
-Both Fold One：兩位玩家都捨棄手上的一張牌
+- Random Switch：和另一位玩家隨機交換一張牌
+- Draw and Fold：再加一張新牌，但要捨棄手上一張舊牌
+- Both Fold One：兩位玩家都捨棄手上的一張牌
