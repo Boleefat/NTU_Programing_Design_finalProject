@@ -1,10 +1,4 @@
 #include <iostream>
-#include <vector>
-#include <string>
-#include <random>
-#include <algorithm>
-#include <ctime>
-#include <fstream>
 #include "BlackJack.h"
 using namespace std;
 
@@ -12,18 +6,7 @@ using namespace std;
 int main()
 {
     
-    // initial settings
     Game game;      // 創建遊戲
-    CardDeck deck;  // 創建牌組
-    game.printStage("Welcome to Unfair Black Jack!");
-    game.addPlayers();            // 加入玩家
-    game.showPlayersNameAndChr(); // 確認玩家資訊
-    game.enterYtoContinue();
-
-    
-    Player* enemy = new Enemy("Banker");
-    game.addPlayer(enemy);  // 加入敵人（莊家）
-    
     
     bool play = true;  // 用迴圈讓玩家可以重複遊玩
     while(play)
@@ -39,7 +22,7 @@ int main()
             game.itemRound(whoWins, play);  // Bonus道具卡回合
         }
         
-        
+
         // 更新玩家的戰績檔案
         game.printStage("Player's Record");
         cout << endl;
@@ -48,12 +31,8 @@ int main()
         
         
         // 詢問玩家是否要再玩一次
-        game.printStage("Game ENDS");
         play = game.playAgain();
     }
-    
-    
-    game.printStage("Program ENDS");
     
     
     return 0;
