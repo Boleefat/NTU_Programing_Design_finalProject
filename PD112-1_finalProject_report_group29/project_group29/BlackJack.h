@@ -344,7 +344,7 @@ private:
     int totalWins;      // 總勝場
 public:
     Record(string playerName);  // 建構函式
-    void print() const;  // 列印玩家檔案
+    void print() const;         // 列印玩家檔案
     void updateRecord(bool winsToday, Player*& player);  // 更新玩家檔案
     
 };
