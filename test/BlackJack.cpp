@@ -1567,8 +1567,8 @@ void Game::drawRound()
     do
     {
         getPlayerAtIndex(2)->playerDraw(tempEnemy, gameDeck);
-        enterYtoContinue();
         getPlayerAtIndex(2)->showHand();
+        enterYtoContinue();
         printLong();
 
         for (int i = 0; i < getNumPlayers(); i++)
