@@ -75,9 +75,9 @@ protected:
     SkillCounter skillCounter;   // 技能狀態
     
 public:
-    // constructors and destructors
+    // constructor and destructor
     Player(const string &playerName);
-    virtual ~Player() = default;
+    ~Player();
 
     // 取得玩家姓名
     string getName() const;
@@ -88,6 +88,12 @@ public:
     // 取得玩家手牌
     vector<Card> &getHand();
     vector<Card> getHand() const;
+    
+    // 玩家行動, 純虛擬函式
+    virtual void playerMove(CardDeck& gameDeck, Game& game) = 0;
+    
+    // 玩家抽牌, 純虛擬函式
+    virtual void playerDraw(int &temp, CardDeck& gameDeck) = 0;
     
     // 印出玩家手牌
     void showHand() const;
@@ -108,11 +114,6 @@ public:
     bool operator<=(const Player& other) const;
     bool operator==(const Player& other) const;
     
-    // 玩家行動
-    virtual void playerMove(CardDeck& gameDeck, Game& game) = 0;
-    
-    // 玩家抽牌
-    virtual void playerDraw(int &temp, CardDeck& gameDeck) = 0;
 };
 
 
@@ -124,14 +125,13 @@ class Seeker : public Player
 public:
     // inherited functions
     Seeker(const string &playerName);
-    virtual ~Seeker() = default;
     void playerDraw(int &temp, CardDeck& gameDeck);
     void playerMove(CardDeck& gameDeck, Game& game);
 
-    // skillOne: Seeker uses a special ability to seek another player's hand
+    // 技能1, 查看指定玩家的手牌
     void seekAnotherPlayer(Player *targetPlayer);
 
-    // skillTwo: Seeker uses a special ability to seek the deck
+    // 技能2, 查看牌組剩餘哪些牌
     void seekDeck(CardDeck &deck);
     
 };
@@ -145,14 +145,13 @@ class Targetor : public Player
 public:
     // inherited functions
     Targetor(const string &playerName);
-    virtual ~Targetor() = default;
     void playerDraw(int &temp, CardDeck& gameDeck);
     void playerMove(CardDeck& gameDeck, Game& game);
 
-    // skillOne
+    // 技能1, 取得牌組裡指定的牌
     void takeSpecificCard(CardDeck &deck, const string &suit, const string &rank);
 
-    // skillTwo
+    // 技能2, 指定玩家棄牌
     void discardCard(Player *targetPlayer, int value);
 
 };
@@ -165,7 +164,6 @@ class Enemy : public Player
 public:
     // inherited functions
     Enemy(const string &enemyName);
-    virtual ~Enemy() = default;
     void playerDraw(int &temp, CardDeck& gameDeck);
     void playerMove(CardDeck& gameDeck, Game& game);
 };
@@ -210,7 +208,7 @@ public:
 
 
 
-// Item class 道具卡 ------------------------------------------------------------------------------------------------------------
+// Item class 道具卡 ---------------------------------------------------------------------------------------------------
 // 道具卡可以被玩家獲得、儲存、使用，定義所有道具卡的共同屬性
 class Item
 {
@@ -226,7 +224,7 @@ public:
     // 取得道具卡名稱
     string getName () const;
     
-    // 使用道具（設定為純虛擬函式）
+    // 使用道具, 純虛擬函式
     virtual void useItem(Player*& theOtherPlayer, Game& game) = 0;
     
     // 詢問玩家要捨棄哪張牌
@@ -268,7 +266,7 @@ public:
 
 
 
-// Game class, 牌局 ------------------------------------------------------------------------------------------------------------
+// Game class, 牌局 ---------------------------------------------------------------------------------------------------
 // 隨著遊戲進行，會陸續新增敵人、物品，玩家也會跟這些敵人和物品互動
 
 class Game
@@ -279,6 +277,9 @@ private:
     vector<Item*> items ;     // 儲存 Item 的ptr
     
 public:
+    // constructor and destructor
+    Game();
+    ~Game();
     
     // 將 Item 加入遊戲給Player
     void addItem(Player*& player);
