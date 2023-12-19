@@ -1177,6 +1177,7 @@ void Game::printIntro(const string file) const
     if (intro)
     {
         //cout << "Here's the introduction of the "+ file +":" << endl;
+        printLong();
         char line[100];
         while (!intro.eof())
         {
